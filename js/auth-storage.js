@@ -6,8 +6,8 @@ class CloudStorage {
         this.storageMethod = 'googlesheets'; // 'googlesheets', 'firebase', 'airtable'
         this.config = {
             googleSheets: {
-                scriptUrl: 'https://script.google.com/macros/s/AKfycbwKwA6vOa1Au19x61NI4xfnGQWfpm8uvb8_gLzhHLvbHQ-Vtr8GSrmFudgtvaDykxox/exec', // Replace with your deployed script URL
-                spreadsheetId: 'YOUR_SPREADSHEET_ID' // Replace with your Google Sheet ID
+                scriptUrl: 'https://script.google.com/macros/s/AKfycbwKwA6vOa1Au19x61NI4xfnGQWfpm8uvb8_gLzhHLvbHQ-Vtr8GSrmFudgtvaDykxox/exec',
+                spreadsheetId: '1YPNsbdZC7GiArdT4kNKqyLo_HuU-HQwwXLQ8RiGkZc0'
             },
             firebase: {
                 apiKey: "YOUR_FIREBASE_API_KEY",
