@@ -25,7 +25,8 @@ class CloudStorage {
     }
 
     init() {
-        this.loadUserSession();
+        // Always show login modal first, regardless of saved session
+        this.showLoginInterface();
         this.setupUI();
     }
 
