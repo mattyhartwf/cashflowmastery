@@ -1,4 +1,7 @@
-/* === Updated Hero Stats Section - Smaller & Horizontal === */
+/* === Updated Hero Stats Section - Add this to your styles.css === */
+
+/* Replace the existing .hero-stats and .stat-card rules with these: */
+
 .hero-stats {
     display: flex;
     gap: var(--spacing-md);
