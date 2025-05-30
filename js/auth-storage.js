@@ -6,7 +6,7 @@ class CloudStorage {
         this.storageMethod = 'googlesheets'; // 'googlesheets', 'firebase', 'airtable'
         this.config = {
             googleSheets: {
-                scriptUrl: 'YOUR_GOOGLE_APPS_SCRIPT_URL', // Replace with your deployed script URL
+                scriptUrl: 'https://script.google.com/macros/s/AKfycbwKwA6vOa1Au19x61NI4xfnGQWfpm8uvb8_gLzhHLvbHQ-Vtr8GSrmFudgtvaDykxox/exec', // Replace with your deployed script URL
                 spreadsheetId: 'YOUR_SPREADSHEET_ID' // Replace with your Google Sheet ID
             },
             firebase: {
