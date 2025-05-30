@@ -757,22 +757,17 @@ class CashFlowMastery {
 
     // Chart initialization and updates
     initializeCharts() {
-        // Initialize hero chart
-        this.initHeroChart();
+        // Initialize hero chart - removed since hero visual is hidden
         // Initialize other charts as needed
     }
 
     initHeroChart() {
-        const canvas = document.getElementById('heroChart');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        
-        // Simple animated chart simulation
-        this.drawSimpleChart(ctx, canvas.width, canvas.height);
+        // Removed since hero chart is no longer displayed
+        return;
     }
 
     drawSimpleChart(ctx, width, height) {
+        // Kept for compatibility but not used in hero section anymore
         ctx.clearRect(0, 0, width, height);
         
         // Create gradient
@@ -781,7 +776,7 @@ class CashFlowMastery {
         gradient.addColorStop(1, 'rgba(194, 155, 60, 0.1)');
         
         // Sample data points
-        const netWorth = parseFloat(document.getElementById('net-worth').textContent.replace(/[$,]/g, '')) || 0;
+        const netWorth = parseFloat(document.getElementById('net-worth')?.textContent.replace(/[$,]/g, '')) || 0;
         const maxValue = Math.max(netWorth, 100000);
         const points = [];
         
@@ -827,33 +822,182 @@ class CashFlowMastery {
     }
 
     updateCharts() {
-        // Update hero chart
-        this.initHeroChart();
-        
         // Update other charts as needed
         if (document.querySelector('.tab-content.active')?.id === 'analytics') {
             this.updateAnalyticsCharts();
         }
     }
 
+    // === ENHANCED ANALYTICS CHARTS === 
     updateAnalyticsCharts() {
-        // Asset allocation chart
-        this.updateAssetChart();
-        
-        // Cash flow trend chart
-        this.updateCashflowChart();
-        
-        // Portfolio performance chart
-        this.updatePortfolioChart();
-        
-        // Expense breakdown chart
-        this.updateExpenseChart();
-        
-        // Growth projection chart
-        this.updateGrowthChart();
+        // Enhanced charts with labels and better breakdowns
+        this.updateIncomeBreakdownChart();
+        this.updateExpenseBreakdownChart();
+        this.updateAssetAllocationChart();
+        this.updateCashFlowTrendChart();
+        this.updateWealthProjectionChart();
     }
 
-    updateAssetChart() {
+    updateIncomeBreakdownChart() {
+        const canvas = document.getElementById('portfolioChart'); // Reusing this canvas
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 40;
+        
+        // Get income data
+        const activeIncome = parseFloat(document.getElementById('active-income-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const portfolioIncome = parseFloat(document.getElementById('portfolio-income-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const passiveIncome = parseFloat(document.getElementById('passive-income-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        
+        const total = activeIncome + portfolioIncome + passiveIncome;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (total === 0) {
+            // Show "No Data" message
+            ctx.fillStyle = '#C8C8C8';
+            ctx.font = '16px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Income Data', centerX, centerY);
+            return;
+        }
+        
+        const colors = ['#C29B3C', '#D4A853', '#10B981'];
+        const labels = ['Active', 'Portfolio', 'Passive'];
+        const values = [activeIncome, portfolioIncome, passiveIncome];
+        let currentAngle = -Math.PI / 2;
+        
+        // Draw pie slices
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                const percentage = ((value / total) * 100).toFixed(1);
+                
+                // Draw slice
+                ctx.fillStyle = colors[index];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Draw label
+                const labelAngle = currentAngle + sliceAngle / 2;
+                const labelX = centerX + Math.cos(labelAngle) * (radius * 0.7);
+                const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 12px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${labels[index]}`, labelX, labelY - 5);
+                ctx.fillText(`${percentage}%`, labelX, labelY + 10);
+                
+                currentAngle += sliceAngle;
+            }
+        });
+        
+        // Draw legend
+        const legendY = canvas.height - 60;
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const legendX = 20 + (index * 120);
+                
+                // Color box
+                ctx.fillStyle = colors[index];
+                ctx.fillRect(legendX, legendY, 12, 12);
+                
+                // Label
+                ctx.fillStyle = '#C8C8C8';
+                ctx.font = '11px Inter';
+                ctx.textAlign = 'left';
+                ctx.fillText(`${labels[index]}: ${this.formatNumber(value)}`, legendX + 18, legendY + 9);
+            }
+        });
+    }
+
+    updateExpenseBreakdownChart() {
+        const canvas = document.getElementById('expenseChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 40;
+        
+        // Get expense data
+        const houseExpenses = parseFloat(document.getElementById('house-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const transportExpenses = parseFloat(document.getElementById('transportation-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const foodExpenses = parseFloat(document.getElementById('food-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const entertainmentExpenses = parseFloat(document.getElementById('entertainment-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        
+        const total = houseExpenses + transportExpenses + foodExpenses + entertainmentExpenses;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (total === 0) {
+            ctx.fillStyle = '#C8C8C8';
+            ctx.font = '16px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Expense Data', centerX, centerY);
+            return;
+        }
+        
+        const colors = ['#EF4444', '#F59E0B', '#8B5CF6', '#06B6D4'];
+        const labels = ['Housing', 'Transport', 'Food', 'Entertainment'];
+        const values = [houseExpenses, transportExpenses, foodExpenses, entertainmentExpenses];
+        let currentAngle = -Math.PI / 2;
+        
+        // Draw pie slices with labels
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                const percentage = ((value / total) * 100).toFixed(1);
+                
+                // Draw slice
+                ctx.fillStyle = colors[index];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Draw label
+                const labelAngle = currentAngle + sliceAngle / 2;
+                const labelX = centerX + Math.cos(labelAngle) * (radius * 0.7);
+                const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 12px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${percentage}%`, labelX, labelY);
+                
+                currentAngle += sliceAngle;
+            }
+        });
+        
+        // Draw legend
+        const legendY = canvas.height - 60;
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const legendX = 20 + (index * 90);
+                
+                // Color box
+                ctx.fillStyle = colors[index];
+                ctx.fillRect(legendX, legendY, 12, 12);
+                
+                // Label
+                ctx.fillStyle = '#C8C8C8';
+                ctx.font = '10px Inter';
+                ctx.textAlign = 'left';
+                ctx.fillText(`${labels[index]}: ${this.formatNumber(value)}`, legendX + 18, legendY + 9);
+            }
+        });
+    }
+
+    updateAssetAllocationChart() {
         const canvas = document.getElementById('assetChart');
         if (!canvas) return;
         
@@ -862,9 +1006,9 @@ class CashFlowMastery {
         const centerY = canvas.height / 2;
         const radius = Math.min(centerX, centerY) - 20;
         
-        const liquidAssets = parseFloat(document.getElementById('liquid-total').textContent.replace(/[$,]/g, '')) || 0;
-        const investments = parseFloat(document.getElementById('investments-total').textContent.replace(/[$,]/g, '')) || 0;
-        const personalAssets = parseFloat(document.getElementById('personal-assets-total').textContent.replace(/[$,]/g, '')) || 0;
+        const liquidAssets = parseFloat(document.getElementById('liquid-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const investments = parseFloat(document.getElementById('investments-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const personalAssets = parseFloat(document.getElementById('personal-assets-total')?.textContent.replace(/[$,]/g, '')) || 0;
         const total = liquidAssets + investments + personalAssets;
         
         if (total === 0) return;
@@ -889,89 +1033,97 @@ class CashFlowMastery {
         });
     }
 
-    updateCashflowChart() {
+    updateCashFlowTrendChart() {
         const canvas = document.getElementById('cashflowChart');
         if (!canvas) return;
         
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Simple bar chart for monthly cash flow trend
-        const monthlyCashFlow = parseFloat(document.getElementById('monthly-cash-flow').textContent.replace(/[$,]/g, '')) || 0;
-        const bars = 6;
-        const barWidth = (canvas.width - 40) / bars;
-        const maxHeight = canvas.height - 40;
+        const monthlyCashFlow = parseFloat(document.getElementById('monthly-cash-flow')?.textContent.replace(/[$,]/g, '')) || 0;
         
-        for (let i = 0; i < bars; i++) {
+        // Generate 12 months of sample data with some variance
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const barWidth = (canvas.width - 80) / 12;
+        const maxHeight = canvas.height - 80;
+        
+        // Find max value for scaling
+        let maxValue = Math.abs(monthlyCashFlow) * 1.2;
+        if (maxValue === 0) maxValue = 1000;
+        
+        // Draw grid lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+            const y = 60 + (i * (maxHeight - 40) / 4);
+            ctx.beginPath();
+            ctx.moveTo(40, y);
+            ctx.lineTo(canvas.width - 20, y);
+            ctx.stroke();
+        }
+        
+        // Draw zero line if needed
+        if (monthlyCashFlow < 0) {
+            const zeroY = 60 + (maxHeight - 40) * 0.6;
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(40, zeroY);
+            ctx.lineTo(canvas.width - 20, zeroY);
+            ctx.stroke();
+        }
+        
+        // Draw bars
+        months.forEach((month, i) => {
             const variance = (Math.random() - 0.5) * 0.3;
             const value = monthlyCashFlow * (1 + variance);
-            const barHeight = Math.abs(value) / Math.max(Math.abs(monthlyCashFlow), 1000) * maxHeight * 0.8;
+            const barHeight = Math.abs(value) / maxValue * (maxHeight - 40);
+            const x = 40 + i * barWidth + 5;
+            const isPositive = value >= 0;
             
-            ctx.fillStyle = value >= 0 ? '#10B981' : '#EF4444';
-            ctx.fillRect(
-                20 + i * barWidth + 5,
-                canvas.height - 20 - (value >= 0 ? barHeight : 0),
-                barWidth - 10,
-                barHeight
-            );
+            ctx.fillStyle = isPositive ? '#10B981' : '#EF4444';
+            
+            if (isPositive) {
+                ctx.fillRect(x, 60 + (maxHeight - 40) - barHeight, barWidth - 10, barHeight);
+            } else {
+                ctx.fillRect(x, 60 + (maxHeight - 40) * 0.6, barWidth - 10, barHeight);
+            }
+            
+            // Month labels
+            ctx.fillStyle = '#C8C8C8';
+            ctx.font = '10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(month, x + (barWidth - 10) / 2, canvas.height - 10);
+            
+            // Value labels on hover area
+            if (Math.abs(value) > maxValue * 0.1) {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '9px Inter';
+                const valueY = isPositive ? 60 + (maxHeight - 40) - barHeight - 5 : 60 + (maxHeight - 40) * 0.6 + barHeight + 15;
+                ctx.fillText(`${this.formatNumber(Math.abs(value))}`, x + (barWidth - 10) / 2, valueY);
+            }
+        });
+        
+        // Y-axis labels
+        ctx.fillStyle = '#C8C8C8';
+        ctx.font = '10px Inter';
+        ctx.textAlign = 'right';
+        for (let i = 0; i <= 4; i++) {
+            const value = maxValue * (1 - i / 4);
+            const y = 60 + (i * (maxHeight - 40) / 4);
+            ctx.fillText(`${this.formatNumber(value)}`, 35, y + 3);
         }
     }
 
-    updatePortfolioChart() {
-        const canvas = document.getElementById('portfolioChart');
-        if (!canvas) return;
-        
-        // Simple line chart showing portfolio growth
-        this.drawSimpleChart(canvas.getContext('2d'), canvas.width, canvas.height);
-    }
-
-    updateExpenseChart() {
-        const canvas = document.getElementById('expenseChart');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = Math.min(centerX, centerY) - 20;
-        
-        const houseExpenses = parseFloat(document.getElementById('house-expenses-total').textContent.replace(/[$,]/g, '')) || 0;
-        const transportExpenses = parseFloat(document.getElementById('transportation-expenses-total').textContent.replace(/[$,]/g, '')) || 0;
-        const foodExpenses = parseFloat(document.getElementById('food-expenses-total').textContent.replace(/[$,]/g, '')) || 0;
-        const entertainmentExpenses = parseFloat(document.getElementById('entertainment-expenses-total').textContent.replace(/[$,]/g, '')) || 0;
-        
-        const total = houseExpenses + transportExpenses + foodExpenses + entertainmentExpenses;
-        
-        if (total === 0) return;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        const colors = ['#C29B3C', '#D4A853', '#E6BC67', '#F0D084'];
-        const values = [houseExpenses, transportExpenses, foodExpenses, entertainmentExpenses];
-        let currentAngle = -Math.PI / 2;
-        
-        values.forEach((value, index) => {
-            const sliceAngle = (value / total) * 2 * Math.PI;
-            
-            ctx.fillStyle = colors[index];
-            ctx.beginPath();
-            ctx.moveTo(centerX, centerY);
-            ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
-            ctx.closePath();
-            ctx.fill();
-            
-            currentAngle += sliceAngle;
-        });
-    }
-
-    updateGrowthChart() {
+    updateWealthProjectionChart() {
         const canvas = document.getElementById('growthChart');
         if (!canvas) return;
         
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        const netWorth = parseFloat(document.getElementById('net-worth').textContent.replace(/[$,]/g, '')) || 0;
-        const annualCashFlow = parseFloat(document.getElementById('annual-cash-flow').textContent.replace(/[$,]/g, '')) || 0;
+        const netWorth = parseFloat(document.getElementById('net-worth')?.textContent.replace(/[$,]/g, '')) || 0;
+        const annualCashFlow = parseFloat(document.getElementById('annual-cash-flow')?.textContent.replace(/[$,]/g, '')) || 0;
         
         // Project wealth growth over 10 years
         const years = 10;
@@ -980,12 +1132,25 @@ class CashFlowMastery {
         
         for (let i = 0; i <= years; i++) {
             points.push({
-                x: (i / years) * (canvas.width - 40) + 20,
-                y: canvas.height - 40 - ((currentWealth / Math.max(currentWealth, netWorth + annualCashFlow * years)) * (canvas.height - 80))
+                x: 40 + (i / years) * (canvas.width - 80),
+                y: canvas.height - 60 - ((currentWealth / Math.max(currentWealth + annualCashFlow * years, 100000)) * (canvas.height - 100)),
+                value: currentWealth,
+                year: new Date().getFullYear() + i
             });
             
             // Assume 5% annual growth on investments plus cash flow
             currentWealth = currentWealth * 1.05 + annualCashFlow;
+        }
+        
+        // Draw grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 5; i++) {
+            const y = 40 + (i * (canvas.height - 100) / 5);
+            ctx.beginPath();
+            ctx.moveTo(40, y);
+            ctx.lineTo(canvas.width - 20, y);
+            ctx.stroke();
         }
         
         // Draw growth projection line
@@ -993,6 +1158,16 @@ class CashFlowMastery {
         gradient.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
         gradient.addColorStop(1, 'rgba(16, 185, 129, 0.1)');
         
+        // Fill area under curve
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, canvas.height - 40);
+        points.forEach(point => ctx.lineTo(point.x, point.y));
+        ctx.lineTo(points[points.length - 1].x, canvas.height - 40);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Draw line
         ctx.strokeStyle = '#10B981';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1005,14 +1180,41 @@ class CashFlowMastery {
         });
         ctx.stroke();
         
-        // Fill area
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, canvas.height - 20);
-        points.forEach(point => ctx.lineTo(point.x, point.y));
-        ctx.lineTo(points[points.length - 1].x, canvas.height - 20);
-        ctx.closePath();
-        ctx.fill();
+        // Draw points and labels
+        ctx.fillStyle = '#10B981';
+        points.forEach((point, index) => {
+            if (index % 2 === 0) { // Every other year
+                // Point
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Year label
+                ctx.fillStyle = '#C8C8C8';
+                ctx.font = '10px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(point.year.toString(), point.x, canvas.height - 20);
+                
+                // Value label
+                if (index === 0 || index === points.length - 1) {
+                    ctx.font = '11px Inter';
+                    ctx.fillText(`${this.formatNumber(point.value)}`, point.x, point.y - 10);
+                }
+                
+                ctx.fillStyle = '#10B981';
+            }
+        });
+    }
+
+    // Helper method for number formatting
+    formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        } else {
+            return Math.round(num).toString();
+        }
     }
 }
 
