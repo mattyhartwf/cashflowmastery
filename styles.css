@@ -272,7 +272,7 @@ body {
     transform: scale(1.05);
 }
 
-/* === Hero Section - UPDATED === */
+/* === Hero Section - FIXED FOR HORIZONTAL LAYOUT === */
 .hero-section {
     padding: var(--spacing-3xl) 0;
     max-width: 1400px;
@@ -328,15 +328,17 @@ body {
     margin-right: auto;
 }
 
-/* Updated Hero Stats - Full Width Horizontal */
+/* FIXED HERO STATS - FORCE HORIZONTAL */
 .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-2xl);
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: var(--spacing-xl) !important;
     margin-top: var(--spacing-2xl);
-    width: 100%;
-    max-width: 800px;
-    flex-wrap: wrap;
+    width: 100% !important;
+    max-width: 900px !important;
+    flex-wrap: nowrap !important;
 }
 
 .stat-card {
@@ -344,12 +346,16 @@ body {
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: var(--spacing-lg) var(--spacing-md);
     text-align: center;
-    min-width: 180px;
-    flex: 1;
-    max-width: 220px;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
     transition: all var(--transition-normal);
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 .stat-card:hover {
@@ -360,19 +366,21 @@ body {
 
 .stat-value {
     font-family: var(--font-display);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--satin-gold);
     margin-bottom: var(--spacing-sm);
     line-height: 1.1;
+    white-space: nowrap;
 }
 
 .stat-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--platinum-silver);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     line-height: 1.2;
+    white-space: nowrap;
 }
 
 /* Remove the hero-visual section entirely */
@@ -722,6 +730,140 @@ body {
     font-size: 1.1rem;
 }
 
+/* === ANALYTICS SECTION CSS === */
+.analytics-dashboard {
+    padding: var(--spacing-xl) 0;
+}
+
+.analytics-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.analytics-header h2 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: var(--spacing-md);
+}
+
+.analytics-header p {
+    font-size: 1.125rem;
+    color: var(--platinum-silver);
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.analytics-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-xl);
+    transition: all var(--transition-normal);
+}
+
+.analytics-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-2xl);
+    border-color: rgba(194, 155, 60, 0.3);
+}
+
+.analytics-card.large {
+    grid-column: 1 / -1;
+}
+
+.analytics-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.chart-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.chart-wrapper canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+.health-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--satin-gold) 0%, var(--rich-gold) 70%, rgba(255,255,255,0.1) 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: var(--spacing-lg);
+}
+
+.score-circle::before {
+    content: '';
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    background: var(--cool-black);
+    border-radius: 50%;
+}
+
+.score-circle span {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--satin-gold);
+    z-index: 1;
+}
+
+.score-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.score-item span:first-child {
+    color: var(--platinum-silver);
+    font-size: 0.9rem;
+}
+
+.score-item span:last-child {
+    color: var(--satin-gold);
+    font-weight: 600;
+}
+
 /* === Responsive Design === */
 @media (max-width: 1200px) {
     .balance-grid {
@@ -743,15 +885,17 @@ body {
     }
     
     .hero-stats {
-        gap: var(--spacing-lg);
-        flex-direction: column;
-        align-items: center;
+        flex-direction: column !important;
+        gap: var(--spacing-lg) !important;
+        align-items: stretch !important;
     }
     
     .stat-card {
-        min-width: 160px;
-        max-width: 280px;
-        width: 100%;
+        flex: none !important;
+        min-width: 200px !important;
+        max-width: 300px !important;
+        width: 100% !important;
+        margin: 0 auto !important;
     }
     
     .balance-grid,
@@ -770,19 +914,18 @@ body {
     .nav-actions {
         gap: var(--spacing-sm);
     }
-}
-
-@media (max-width: 480px) {
-    .hero-stats {
-        gap: var(--spacing-md);
+    
+    .analytics-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
     }
     
-    .stat-card {
-        min-width: 140px;
-        padding: var(--spacing-md) var(--spacing-lg);
+    .analytics-card {
+        padding: var(--spacing-lg);
     }
     
-    .stat-value {
-        font-size: 1.5rem;
+    .chart-wrapper canvas {
+        width: 100% !important;
+        height: auto !important;
     }
 }
