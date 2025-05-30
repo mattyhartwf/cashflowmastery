@@ -893,7 +893,146 @@
     }
 }
 
-@media (max-width: 480px) {
+/* === LearnWorlds Integration Styles === */
+.user-info-display {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-right: var(--spacing-lg);
+}
+
+.user-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--satin-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cool-black);
+    font-size: 1.2rem;
+}
+
+.coach-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--success-green);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+}
+
+.user-name {
+    font-weight: 700;
+    color: var(--white);
+    font-size: 0.9rem;
+}
+
+.user-email {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.user-role {
+    font-size: 0.7rem;
+    color: var(--success-green);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.learnworlds-instructions {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.learnworlds-instructions h4 {
+    color: var(--satin-gold);
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+}
+
+.learnworlds-instructions ol {
+    margin: var(--spacing-md) 0;
+    padding-left: var(--spacing-lg);
+}
+
+.learnworlds-instructions li {
+    margin-bottom: var(--spacing-sm);
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+}
+
+.learnworlds-instructions code {
+    background: rgba(194, 155, 60, 0.2);
+    color: var(--satin-gold);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.8rem;
+}
+
+.coach-access {
+    margin: var(--spacing-lg) 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    color: var(--white);
+    font-size: 0.9rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--satin-gold);
+    border-radius: var(--radius-sm);
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background: var(--satin-gold);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--cool-black);
+    font-weight: bold;
+    font-size: 12px;
+}
     .hero-stats {
         flex-direction: column;
         align-items: center;
