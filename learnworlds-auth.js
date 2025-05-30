@@ -290,12 +290,17 @@ class LearnWorldsIntegration {
             // Save session
             this.saveUserSession();
             
-            // Load user data
-            await this.loadUserData();
-            
             this.hideLoading();
             this.hideLoginModal();
-            this.showUserInfo();
+            
+            if (isCoach) {
+                // Show coach interface instead of loading data
+                this.showCoachInterface();
+            } else {
+                // Load user data for regular users
+                await this.loadUserData();
+                this.showUserInfo();
+            }
             
             if (window.app) {
                 window.app.showNotification(`Welcome${isCoach ? ' Coach' : ''}, ${name}!`, 'success');
@@ -306,6 +311,373 @@ class LearnWorldsIntegration {
             this.hideLoading();
             this.showError('Failed to connect to your account. Please try again.');
         }
+    }
+
+    showCoachInterface() {
+        this.showUserInfo();
+        
+        // Create coach control panel
+        const coachPanel = document.createElement('div');
+        coachPanel.id = 'coach-panel';
+        coachPanel.className = 'coach-panel';
+        coachPanel.innerHTML = `
+            <div class="coach-header">
+                <h3><i class="fas fa-users"></i> Coach Dashboard</h3>
+                <p>Access and manage student financial data</p>
+            </div>
+            
+            <div class="coach-actions">
+                <div class="student-search">
+                    <div class="form-group">
+                        <label for="student-email">Student Email Address</label>
+                        <input type="email" id="student-email" placeholder="student@email.com" class="premium-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="student-name">Student Name (Optional)</label>
+                        <input type="text" id="student-name" placeholder="Student Name" class="premium-input">
+                    </div>
+                    <div class="coach-button-group">
+                        <button id="load-student-btn" class="premium-btn primary">
+                            <i class="fas fa-search"></i>
+                            Load Student Data
+                        </button>
+                        <button id="list-students-btn" class="premium-btn secondary">
+                            <i class="fas fa-list"></i>
+                            View All Students
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="current-student-info" class="current-student hidden">
+                    <div class="student-card">
+                        <div class="student-details">
+                            <h4 id="current-student-name">No student selected</h4>
+                            <p id="current-student-email"></p>
+                            <p id="student-last-updated"></p>
+                        </div>
+                        <div class="student-stats">
+                            <div class="stat">
+                                <span class="stat-label">Net Worth</span>
+                                <span class="stat-value" id="student-net-worth">$0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Monthly Cash Flow</span>
+                                <span class="stat-value" id="student-cash-flow">$0</span>
+                            </div>
+                        </div>
+                        <button id="save-student-data-btn" class="premium-btn primary">
+                            <i class="fas fa-save"></i>
+                            Save Student Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="students-list" class="students-list hidden">
+                <h4>All Students</h4>
+                <div id="students-table"></div>
+            </div>
+        `;
+        
+        // Insert coach panel into the page
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.insertBefore(coachPanel, mainContent.firstChild);
+        }
+        
+        // Add event listeners
+        document.getElementById('load-student-btn').addEventListener('click', () => {
+            this.loadStudentData();
+        });
+        
+        document.getElementById('list-students-btn').addEventListener('click', () => {
+            this.listAllStudents();
+        });
+        
+        document.getElementById('save-student-data-btn').addEventListener('click', () => {
+            this.saveCurrentStudentData();
+        });
+    }
+
+    async loadStudentData() {
+        const studentEmail = document.getElementById('student-email').value.trim();
+        const studentName = document.getElementById('student-name').value.trim();
+        
+        if (!studentEmail) {
+            this.showError('Please enter a student email address');
+            return;
+        }
+        
+        if (!this.isValidEmail(studentEmail)) {
+            this.showError('Please enter a valid email address');
+            return;
+        }
+        
+        this.showLoading('Loading student data...');
+        
+        try {
+            const response = await fetch(this.config.googleSheets.scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'load',
+                    email: studentEmail
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            this.hideLoading();
+            
+            if (result.success && result.data) {
+                // Load student data into the app
+                this.currentStudentEmail = studentEmail;
+                this.currentStudentName = studentName || result.data.name || studentEmail.split('@')[0];
+                
+                if (window.app && result.data.data) {
+                    // Clear existing data first
+                    window.app.data = {};
+                    
+                    // Load student data
+                    window.app.data = { ...result.data.data };
+                    window.app.calculateAll();
+                    
+                    // Update all inputs with loaded values
+                    Object.entries(result.data.data).forEach(([field, value]) => {
+                        const input = document.querySelector(`[data-field="${field}"]`);
+                        if (input) {
+                            input.value = value || '';
+                        }
+                    });
+                    
+                    // Show student info
+                    this.displayCurrentStudent(result.data);
+                    
+                    window.app.showNotification(`Loaded data for ${this.currentStudentName}`, 'success');
+                }
+            } else {
+                // No existing data - create new student record
+                this.currentStudentEmail = studentEmail;
+                this.currentStudentName = studentName || studentEmail.split('@')[0];
+                
+                // Clear the form
+                if (window.app) {
+                    window.app.data = {};
+                    window.app.calculateAll();
+                    
+                    // Clear all inputs
+                    document.querySelectorAll('[data-field]').forEach(input => {
+                        input.value = '';
+                    });
+                }
+                
+                this.displayCurrentStudent({
+                    email: studentEmail,
+                    name: this.currentStudentName,
+                    lastUpdated: 'Never',
+                    netWorth: 0,
+                    monthlyCashFlow: 0
+                });
+                
+                if (window.app) {
+                    window.app.showNotification(`Ready to enter data for ${this.currentStudentName}`, 'info');
+                }
+            }
+            
+        } catch (error) {
+            console.error('Failed to load student data:', error);
+            this.hideLoading();
+            this.showError('Failed to load student data. Please try again.');
+        }
+    }
+
+    displayCurrentStudent(studentData) {
+        const currentStudentInfo = document.getElementById('current-student-info');
+        const studentsList = document.getElementById('students-list');
+        
+        if (currentStudentInfo) {
+            currentStudentInfo.classList.remove('hidden');
+            
+            document.getElementById('current-student-name').textContent = studentData.name;
+            document.getElementById('current-student-email').textContent = studentData.email;
+            document.getElementById('student-last-updated').textContent = 
+                `Last updated: ${studentData.lastUpdated ? new Date(studentData.lastUpdated).toLocaleDateString() : 'Never'}`;
+            document.getElementById('student-net-worth').textContent = 
+                this.formatCurrency(studentData.netWorth || 0);
+            document.getElementById('student-cash-flow').textContent = 
+                this.formatCurrency(studentData.monthlyCashFlow || 0);
+        }
+        
+        if (studentsList) {
+            studentsList.classList.add('hidden');
+        }
+    }
+
+    async saveCurrentStudentData() {
+        if (!this.currentStudentEmail) {
+            this.showError('No student selected');
+            return;
+        }
+        
+        if (!window.app) {
+            this.showError('Application not ready');
+            return;
+        }
+        
+        this.showLoading('Saving student data...');
+        
+        try {
+            const userData = {
+                email: this.currentStudentEmail,
+                name: this.currentStudentName,
+                timestamp: new Date().toISOString(),
+                data: window.app.data,
+                isCoach: false, // This is student data
+                savedByCoach: this.currentUser.email,
+                source: 'coach_entry'
+            };
+            
+            const response = await fetch(this.config.googleSheets.scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'save',
+                    userData: userData
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            this.hideLoading();
+            
+            if (result.success) {
+                if (window.app) {
+                    window.app.showNotification(`Data saved for ${this.currentStudentName}!`, 'success');
+                }
+                
+                // Refresh student display with updated info
+                this.loadStudentData();
+            } else {
+                throw new Error(result.error || 'Failed to save data');
+            }
+            
+        } catch (error) {
+            console.error('Save error:', error);
+            this.hideLoading();
+            this.showError('Failed to save student data. Please try again.');
+        }
+    }
+
+    async listAllStudents() {
+        this.showLoading('Loading all students...');
+        
+        try {
+            const response = await fetch(this.config.googleSheets.scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'list'
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            this.hideLoading();
+            
+            if (result.success) {
+                this.displayStudentsList(result.users || []);
+            } else {
+                throw new Error(result.error || 'Failed to load students');
+            }
+            
+        } catch (error) {
+            console.error('Failed to load students:', error);
+            this.hideLoading();
+            this.showError('Failed to load students list.');
+        }
+    }
+
+    displayStudentsList(students) {
+        const currentStudentInfo = document.getElementById('current-student-info');
+        const studentsList = document.getElementById('students-list');
+        const studentsTable = document.getElementById('students-table');
+        
+        if (currentStudentInfo) {
+            currentStudentInfo.classList.add('hidden');
+        }
+        
+        if (studentsList) {
+            studentsList.classList.remove('hidden');
+        }
+        
+        if (studentsTable) {
+            if (students.length === 0) {
+                studentsTable.innerHTML = '<p>No students found.</p>';
+                return;
+            }
+            
+            const tableHTML = `
+                <div class="students-table">
+                    <div class="table-header">
+                        <div>Name</div>
+                        <div>Email</div>
+                        <div>Net Worth</div>
+                        <div>Cash Flow</div>
+                        <div>Last Updated</div>
+                        <div>Actions</div>
+                    </div>
+                    ${students.map(student => `
+                        <div class="table-row">
+                            <div>${student.name}</div>
+                            <div>${student.email}</div>
+                            <div>${this.formatCurrency(student.netWorth || 0)}</div>
+                            <div>${this.formatCurrency(student.monthlyCashFlow || 0)}</div>
+                            <div>${student.lastUpdated ? new Date(student.lastUpdated).toLocaleDateString() : 'Never'}</div>
+                            <div>
+                                <button class="premium-btn tertiary" onclick="learnWorldsAuth.selectStudent('${student.email}', '${student.name}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            studentsTable.innerHTML = tableHTML;
+        }
+    }
+
+    selectStudent(email, name) {
+        document.getElementById('student-email').value = email;
+        document.getElementById('student-name').value = name;
+        this.loadStudentData();
+    }
+
+    formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
     }
 
     handleGuestMode() {
