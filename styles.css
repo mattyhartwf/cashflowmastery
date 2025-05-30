@@ -486,6 +486,102 @@ body {
     grid-template-columns: 1fr 2fr 1fr;
 }
 
+/* === New Layout Grids === */
+.income-grid-new {
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.balance-grid-new {
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.income-expenses-container,
+.assets-liabilities-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+/* === Section Divider === */
+.section-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin: var(--spacing-2xl) 0;
+}
+
+.divider-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--satin-gold), transparent);
+}
+
+.divider-text {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--satin-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0 var(--spacing-lg);
+    background: var(--cool-black);
+}
+
+/* === Expanded Categories === */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-xl);
+}
+
+.category-card.expanded {
+    min-height: auto;
+    padding: var(--spacing-xl);
+}
+
+.expanded-items {
+    max-height: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* === Sidebar Styles === */
+.cashflow-section-sidebar,
+.summary-section-sidebar {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.summary-cards-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.chart-container {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--spacing-md);
+}
+
+/* === Enhanced Financial Sections === */
+.income-section-top,
+.expenses-section-bottom,
+.assets-section-top,
+.liabilities-section-bottom {
+    padding: var(--spacing-2xl);
+    margin-bottom: var(--spacing-lg);
+}
+
 /* === Financial Sections === */
 .financial-section {
     background: var(--glass-bg);
