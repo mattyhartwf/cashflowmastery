@@ -103,14 +103,14 @@
             <!-- Tab Navigation -->
             <div class="premium-tabs">
                 <div class="tabs-container">
-                    <button class="tab-btn active" data-tab="balance-sheet">
-                        <i class="fas fa-balance-scale"></i>
-                        <span>Balance Sheet</span>
-                        <div class="tab-indicator"></div>
-                    </button>
-                    <button class="tab-btn" data-tab="income-statement">
+                    <button class="tab-btn active" data-tab="income-statement">
                         <i class="fas fa-chart-line"></i>
                         <span>Income Statement</span>
+                        <div class="tab-indicator"></div>
+                    </button>
+                    <button class="tab-btn" data-tab="balance-sheet">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Balance Sheet</span>
                         <div class="tab-indicator"></div>
                     </button>
                     <button class="tab-btn" data-tab="analytics">
@@ -121,7 +121,348 @@
                 </div>
             </div>
 
-            <!-- Balance Sheet Tab -->
+            <!-- Income Statement Tab (Now First) -->
+            <div id="income-statement" class="tab-content active">
+                <div class="content-grid income-grid-new">
+                    <!-- Income Section (Top Half) -->
+                    <div class="income-expenses-container">
+                        <div class="financial-section income-section-top">
+                            <div class="section-header">
+                                <h2 class="section-title">
+                                    <i class="fas fa-arrow-up"></i>
+                                    Monthly Income
+                                </h2>
+                                <div class="section-total" id="total-income">$0</div>
+                            </div>
+                            
+                            <div class="categories-grid income-categories">
+                                <!-- Active Income -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-briefcase"></i> Active Income</h3>
+                                        <div class="category-total" id="active-income-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="active-income-container">
+                                        <div class="financial-item">
+                                            <label>Salary/Wages</label>
+                                            <input type="number" class="premium-input" data-field="salary_wages" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Distributions</label>
+                                            <input type="number" class="premium-input" data-field="distributions" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Commissions</label>
+                                            <input type="number" class="premium-input" data-field="commissions" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Bonus</label>
+                                            <input type="number" class="premium-input" data-field="bonus" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Interest Income</label>
+                                            <input type="number" class="premium-input" data-field="interest_income" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('active-income')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Income
+                                    </button>
+                                </div>
+
+                                <!-- Portfolio Income -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-chart-line"></i> Portfolio Income</h3>
+                                        <div class="category-total" id="portfolio-income-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="portfolio-income-container">
+                                        <div class="financial-item">
+                                            <label>Dividends</label>
+                                            <input type="number" class="premium-input" data-field="dividends" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Royalties</label>
+                                            <input type="number" class="premium-input" data-field="royalties" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('portfolio-income')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Portfolio Income
+                                    </button>
+                                </div>
+
+                                <!-- Passive Income -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-building"></i> Passive Income</h3>
+                                        <div class="category-total" id="passive-income-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="passive-income-container">
+                                        <div class="financial-item">
+                                            <label>Business Income</label>
+                                            <input type="number" class="premium-input" data-field="business_income" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Real Estate Income</label>
+                                            <input type="number" class="premium-input" data-field="real_estate_income" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('passive-income')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Passive Income
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Divider Line -->
+                        <div class="section-divider">
+                            <div class="divider-line"></div>
+                            <div class="divider-text">Monthly Expenses</div>
+                            <div class="divider-line"></div>
+                        </div>
+
+                        <!-- Expenses Section (Bottom Half) -->
+                        <div class="financial-section expenses-section-bottom">
+                            <div class="section-header">
+                                <h2 class="section-title">
+                                    <i class="fas fa-arrow-down"></i>
+                                    Monthly Expenses
+                                </h2>
+                                <div class="section-total" id="total-expenses">$0</div>
+                            </div>
+                            
+                            <div class="categories-grid expenses-categories">
+                                <!-- House Expenses -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-home"></i> House</h3>
+                                        <div class="category-total" id="house-expenses-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="house-expenses-container">
+                                        <div class="financial-item">
+                                            <label>Mortgage/Rent</label>
+                                            <input type="number" class="premium-input" data-field="mortgage_rent" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>HELOC Payment</label>
+                                            <input type="number" class="premium-input" data-field="heloc_payment" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>HOA Fees</label>
+                                            <input type="number" class="premium-input" data-field="hoa_fees" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Cell Phone #1</label>
+                                            <input type="number" class="premium-input" data-field="cell_phone_1" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Cell Phone #2</label>
+                                            <input type="number" class="premium-input" data-field="cell_phone_2" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Electricity</label>
+                                            <input type="number" class="premium-input" data-field="electricity" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Gas</label>
+                                            <input type="number" class="premium-input" data-field="gas" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Water/Sewer</label>
+                                            <input type="number" class="premium-input" data-field="water_sewer" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Waste Removal</label>
+                                            <input type="number" class="premium-input" data-field="waste_removal" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Repairs/Maintenance</label>
+                                            <input type="number" class="premium-input" data-field="repairs_maintenance" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Lawncare/Pest</label>
+                                            <input type="number" class="premium-input" data-field="lawncare_pest" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('house-expenses')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom House Expense
+                                    </button>
+                                </div>
+
+                                <!-- Transportation -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-car"></i> Transportation</h3>
+                                        <div class="category-total" id="transportation-expenses-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="transportation-expenses-container">
+                                        <div class="financial-item">
+                                            <label>Auto Payment #1</label>
+                                            <input type="number" class="premium-input" data-field="auto_payment_1" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Auto Payment #2</label>
+                                            <input type="number" class="premium-input" data-field="auto_payment_2" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Auto Insurance</label>
+                                            <input type="number" class="premium-input" data-field="auto_insurance" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Registration/Tags</label>
+                                            <input type="number" class="premium-input" data-field="registration_tags" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Gas/Fuel</label>
+                                            <input type="number" class="premium-input" data-field="gas_fuel" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Auto Repairs</label>
+                                            <input type="number" class="premium-input" data-field="auto_repairs" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('transportation-expenses')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Transportation Expense
+                                    </button>
+                                </div>
+
+                                <!-- Food -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-utensils"></i> Food</h3>
+                                        <div class="category-total" id="food-expenses-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="food-expenses-container">
+                                        <div class="financial-item">
+                                            <label>Groceries</label>
+                                            <input type="number" class="premium-input" data-field="groceries" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Restaurants</label>
+                                            <input type="number" class="premium-input" data-field="restaurants" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('food-expenses')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Food Expense
+                                    </button>
+                                </div>
+
+                                <!-- Entertainment -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-film"></i> Entertainment</h3>
+                                        <div class="category-total" id="entertainment-expenses-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="entertainment-expenses-container">
+                                        <div class="financial-item">
+                                            <label>Streaming</label>
+                                            <input type="number" class="premium-input" data-field="streaming" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Music</label>
+                                            <input type="number" class="premium-input" data-field="music" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Movies</label>
+                                            <input type="number" class="premium-input" data-field="movies" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Concerts</label>
+                                            <input type="number" class="premium-input" data-field="concerts" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Sporting Events</label>
+                                            <input type="number" class="premium-input" data-field="sporting_events" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Live Theater</label>
+                                            <input type="number" class="premium-input" data-field="live_theater" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Outdoor Activities</label>
+                                            <input type="number" class="premium-input" data-field="outdoor_activities" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('entertainment-expenses')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Entertainment Expense
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Flow Summary (Right Sidebar) -->
+                    <div class="financial-section cashflow-section-sidebar">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-exchange-alt"></i>
+                                Cash Flow
+                            </h2>
+                            <div class="section-total" id="monthly-cash-flow">$0</div>
+                        </div>
+                        
+                        <div class="summary-cards-sidebar">
+                            <div class="summary-card">
+                                <h4>Monthly Summary</h4>
+                                <div class="summary-items">
+                                    <div class="summary-item">
+                                        <span>Total Income</span>
+                                        <span id="summary-income">$0</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>Total Expenses</span>
+                                        <span id="summary-expenses">$0</span>
+                                    </div>
+                                    <div class="summary-item primary">
+                                        <span>Monthly Cash Flow</span>
+                                        <span id="summary-cash-flow">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <h4>Annual Projection</h4>
+                                <div class="projection-items">
+                                    <div class="projection-item">
+                                        <span>Annual Income</span>
+                                        <span id="annual-income">$0</span>
+                                    </div>
+                                    <div class="projection-item">
+                                        <span>Annual Expenses</span>
+                                        <span id="annual-expenses">$0</span>
+                                    </div>
+                                    <div class="projection-item primary">
+                                        <span>Annual Cash Flow</span>
+                                        <span id="annual-cash-flow">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <h4>Income Distribution</h4>
+                                <div class="chart-container">
+                                    <canvas id="incomeDistributionChart" width="200" height="200"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <h4>Expense Breakdown</h4>
+                                <div class="chart-container">
+                                    <canvas id="expenseDistributionChart" width="200" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Balance Sheet Tab (Now Second) -->
             <div id="balance-sheet" class="tab-content active">
                 <div class="content-grid balance-grid">
                     <!-- Assets Section -->
