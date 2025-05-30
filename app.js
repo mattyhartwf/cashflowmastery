@@ -63,7 +63,7 @@ class CashFlowMastery {
 
         // Save to Google Sheets
         document.getElementById('saveToSheets').addEventListener('click', () => {
-            this.saveToGoogleSheets();
+            this.manualSave();
         });
 
         // Export PDF
@@ -568,28 +568,37 @@ class CashFlowMastery {
     }
 
     // Export and sharing functionality
-    async saveToGoogleSheets() {
-        this.showNotification('Preparing to save to Google Sheets...', 'info');
+    async manualSave() {
+        if (!window.learnWorldsAuth || !window.learnWorldsAuth.currentUser) {
+            this.showNotification('Please log in to save to cloud', 'warning');
+            return;
+        }
         
-        // Simulate Google Sheets API call
+        this.showNotification('Saving to cloud...', 'info');
+        
         try {
-            const exportData = this.prepareExportData();
+            const userData = {
+                userData: this.data,
+                customItems: this.customItems
+            };
             
-            // In a real implementation, you would call the Google Sheets API here
-            console.log('Export data prepared:', exportData);
-            
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            this.showNotification('Data saved to Google Sheets successfully!', 'success');
-            
-            // Open Google Sheets template (you would provide the actual sheet URL)
-            const sheetsUrl = 'https://docs.google.com/spreadsheets/create';
-            window.open(sheetsUrl, '_blank');
-            
+            if (window.learnWorldsAuth.currentUser.isCoach && window.learnWorldsAuth.currentStudentEmail) {
+                // Coach saving student data
+                await window.learnWorldsAuth.saveCurrentStudentData();
+            } else if (!window.learnWorldsAuth.currentUser.isCoach) {
+                // Regular user saving their own data
+                const result = await window.learnWorldsAuth.saveUserData(userData);
+                if (result.success) {
+                    this.showNotification('Data saved to cloud successfully!', 'success');
+                } else {
+                    this.showNotification('Failed to save to cloud: ' + result.error, 'error');
+                }
+            } else {
+                this.showNotification('Please select a student first', 'warning');
+            }
         } catch (error) {
-            console.error('Error saving to Google Sheets:', error);
-            this.showNotification('Error saving to Google Sheets. Please try again.', 'error');
+            console.error('Manual save failed:', error);
+            this.showNotification('Failed to save to cloud', 'error');
         }
     }
 
