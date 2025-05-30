@@ -502,8 +502,34 @@ class CashFlowMastery {
     saveData() {
         try {
             localStorage.setItem('cashFlowMasteryData', JSON.stringify(this.data));
+            
+            // Also save to cloud if user is logged in
+            if (window.learnWorldsAuth && window.learnWorldsAuth.currentUser) {
+                this.saveToCloud();
+            }
         } catch (e) {
             console.warn('Could not save data to localStorage:', e);
+        }
+    }
+
+    async saveToCloud() {
+        try {
+            if (window.learnWorldsAuth && window.learnWorldsAuth.currentUser) {
+                const userData = {
+                    userData: this.data,
+                    customItems: this.customItems
+                };
+                
+                if (window.learnWorldsAuth.currentUser.isCoach && window.learnWorldsAuth.currentStudentEmail) {
+                    // Coach is saving student data
+                    await window.learnWorldsAuth.saveCurrentStudentData();
+                } else if (!window.learnWorldsAuth.currentUser.isCoach) {
+                    // Regular user saving their own data
+                    await window.learnWorldsAuth.saveUserData(userData);
+                }
+            }
+        } catch (error) {
+            console.error('Cloud save failed:', error);
         }
     }
 
