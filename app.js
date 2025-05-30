@@ -400,31 +400,6 @@ class CashFlowMastery {
         }
     }
 
-    // Reset all data to $0
-    resetAllData() {
-        // Clear all data
-        this.data = {};
-        this.customItems = {};
-        
-        // Clear localStorage
-        try {
-            localStorage.removeItem('cashFlowMasteryData');
-            localStorage.removeItem('cashFlowMasteryCustomItems');
-        } catch (e) {
-            console.warn('Could not clear localStorage:', e);
-        }
-        
-        // Reset all input fields to empty
-        document.querySelectorAll('.premium-input').forEach(input => {
-            input.value = '';
-        });
-        
-        // Recalculate everything (this will show $0 everywhere)
-        this.calculateAll();
-        
-        this.showNotification('All data has been reset to $0', 'success');
-    }
-
     // Custom item management
     addCustomItem(category) {
         const modal = this.createCustomItemModal(category);
@@ -523,7 +498,7 @@ class CashFlowMastery {
         }, 500);
     }
 
-    // Data persistence - Modified to start with empty data
+    // Data persistence
     saveData() {
         try {
             localStorage.setItem('cashFlowMasteryData', JSON.stringify(this.data));
@@ -558,34 +533,9 @@ class CashFlowMastery {
         }
     }
 
-    // Modified to always start with empty data (ensures $0 values)
+    // CHANGED: Always return empty data to ensure $0 values
     loadData() {
-        // Always start with empty data to ensure $0 values
         return {};
-        
-        // Original code below (commented out):
-        // try {
-        //     const saved = localStorage.getItem('cashFlowMasteryData');
-        //     return saved ? JSON.parse(saved) : {};
-        // } catch (e) {
-        //     console.warn('Could not load data from localStorage:', e);
-        //     return {};
-        // }
-    }
-
-    // Modified to always start with empty custom items
-    loadCustomItems() {
-        // Always start with empty custom items
-        return {};
-        
-        // Original code below (commented out):
-        // try {
-        //     const saved = localStorage.getItem('cashFlowMasteryCustomItems');
-        //     return saved ? JSON.parse(saved) : {};
-        // } catch (e) {
-        //     console.warn('Could not load custom items:', e);
-        //     return {};
-        // }
     }
 
     saveCustomItems() {
@@ -594,6 +544,11 @@ class CashFlowMastery {
         } catch (e) {
             console.warn('Could not save custom items:', e);
         }
+    }
+
+    // CHANGED: Always return empty custom items to ensure $0 values
+    loadCustomItems() {
+        return {};
     }
 
     startAutoSave() {
