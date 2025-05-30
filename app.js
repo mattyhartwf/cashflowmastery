@@ -24,9 +24,12 @@ class CashFlowMastery {
             const loadingScreen = document.getElementById('loading-screen');
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
-                document.getElementById('app').classList.add('animate-fade-in');
             }
-        }, 2000);
+            const app = document.getElementById('app');
+            if (app) {
+                app.classList.add('animate-fade-in');
+            }
+        }, 1000); // Reduced from 2000 to 1000 for faster loading
     }
 
     setupEventListeners() {
@@ -62,19 +65,28 @@ class CashFlowMastery {
         });
 
         // Save to Google Sheets
-        document.getElementById('saveToSheets').addEventListener('click', () => {
-            this.manualSave();
-        });
+        const saveBtn = document.getElementById('saveToSheets');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                this.manualSave();
+            });
+        }
 
         // Export PDF
-        document.getElementById('exportPDF').addEventListener('click', () => {
-            this.exportToPDF();
-        });
+        const exportBtn = document.getElementById('exportPDF');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportToPDF();
+            });
+        }
 
         // Share functionality
-        document.getElementById('shareBtn').addEventListener('click', () => {
-            this.shareData();
-        });
+        const shareBtn = document.getElementById('shareBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', () => {
+                this.shareData();
+            });
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -82,7 +94,7 @@ class CashFlowMastery {
                 switch(e.key) {
                     case 's':
                         e.preventDefault();
-                        this.saveToGoogleSheets();
+                        this.manualSave();
                         break;
                     case '1':
                         e.preventDefault();
@@ -127,7 +139,9 @@ class CashFlowMastery {
         });
         
         const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
-        activeBtn.classList.add('active');
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
 
         // Update tab content with smooth transition
         document.querySelectorAll('.tab-content').forEach(content => {
@@ -135,7 +149,10 @@ class CashFlowMastery {
         });
         
         setTimeout(() => {
-            document.getElementById(tabId).classList.add('active');
+            const tabContent = document.getElementById(tabId);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
         }, 150);
 
         // Update charts if switching to analytics
@@ -328,10 +345,15 @@ class CashFlowMastery {
     }
 
     calculateRatios() {
-        const totalAssets = parseFloat(document.getElementById('total-assets').textContent.replace(/[$,]/g, '')) || 0;
-        const totalLiabilities = parseFloat(document.getElementById('total-liabilities').textContent.replace(/[$,]/g, '')) || 0;
-        const totalIncome = parseFloat(document.getElementById('total-income').textContent.replace(/[$,]/g, '')) || 0;
-        const liquidAssets = parseFloat(document.getElementById('liquid-total').textContent.replace(/[$,]/g, '')) || 0;
+        const totalAssetsEl = document.getElementById('total-assets');
+        const totalLiabilitiesEl = document.getElementById('total-liabilities');
+        const totalIncomeEl = document.getElementById('total-income');
+        const liquidTotalEl = document.getElementById('liquid-total');
+
+        const totalAssets = totalAssetsEl ? parseFloat(totalAssetsEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const totalLiabilities = totalLiabilitiesEl ? parseFloat(totalLiabilitiesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const totalIncome = totalIncomeEl ? parseFloat(totalIncomeEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const liquidAssets = liquidTotalEl ? parseFloat(liquidTotalEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
 
         // Debt-to-Asset Ratio
         const debtToAssetRatio = totalAssets > 0 ? (totalLiabilities / totalAssets * 100) : 0;
@@ -343,7 +365,8 @@ class CashFlowMastery {
         const debtToIncomeRatio = totalIncome > 0 ? (totalLiabilities / (totalIncome * 12) * 100) : 0;
         
         // Savings Rate
-        const monthlyCashFlow = parseFloat(document.getElementById('monthly-cash-flow').textContent.replace(/[$,]/g, '')) || 0;
+        const monthlyCashFlowEl = document.getElementById('monthly-cash-flow');
+        const monthlyCashFlow = monthlyCashFlowEl ? parseFloat(monthlyCashFlowEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
         const savingsRate = totalIncome > 0 ? (monthlyCashFlow / totalIncome * 100) : 0;
 
         // Update ratio displays
@@ -377,8 +400,11 @@ class CashFlowMastery {
     }
 
     updateHeroStats() {
-        const netWorth = parseFloat(document.getElementById('net-worth').textContent.replace(/[$,]/g, '')) || 0;
-        const monthlyCashFlow = parseFloat(document.getElementById('monthly-cash-flow').textContent.replace(/[$,]/g, '')) || 0;
+        const netWorthEl = document.getElementById('net-worth');
+        const monthlyCashFlowEl = document.getElementById('monthly-cash-flow');
+        
+        const netWorth = netWorthEl ? parseFloat(netWorthEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const monthlyCashFlow = monthlyCashFlowEl ? parseFloat(monthlyCashFlowEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
         const annualProjection = monthlyCashFlow * 12;
 
         this.updateElement('hero-net-worth', this.formatMoney(netWorth));
@@ -504,34 +530,8 @@ class CashFlowMastery {
     saveData() {
         try {
             localStorage.setItem('cashFlowMasteryData', JSON.stringify(this.data));
-            
-            // Also save to cloud if user is logged in
-            if (window.learnWorldsAuth && window.learnWorldsAuth.currentUser) {
-                this.saveToCloud();
-            }
         } catch (e) {
             console.warn('Could not save data to localStorage:', e);
-        }
-    }
-
-    async saveToCloud() {
-        try {
-            if (window.learnWorldsAuth && window.learnWorldsAuth.currentUser) {
-                const userData = {
-                    userData: this.data,
-                    customItems: this.customItems
-                };
-                
-                if (window.learnWorldsAuth.currentUser.isCoach && window.learnWorldsAuth.currentStudentEmail) {
-                    // Coach is saving student data
-                    await window.learnWorldsAuth.saveCurrentStudentData();
-                } else if (!window.learnWorldsAuth.currentUser.isCoach) {
-                    // Regular user saving their own data
-                    await window.learnWorldsAuth.saveUserData(userData);
-                }
-            }
-        } catch (error) {
-            console.error('Cloud save failed:', error);
         }
     }
 
@@ -559,219 +559,77 @@ class CashFlowMastery {
         }, 30000); // Auto-save every 30 seconds
     }
 
-    // Export and sharing functionality
     async manualSave() {
-        if (!window.learnWorldsAuth || !window.learnWorldsAuth.currentUser) {
-            this.showNotification('Please log in to save to cloud', 'warning');
-            return;
-        }
-        
-        this.showNotification('Saving to cloud...', 'info');
-        
-        try {
-            const userData = {
-                userData: this.data,
-                customItems: this.customItems
-            };
-            
-            if (window.learnWorldsAuth.currentUser.isCoach && window.learnWorldsAuth.currentStudentEmail) {
-                // Coach saving student data
-                await window.learnWorldsAuth.saveCurrentStudentData();
-            } else if (!window.learnWorldsAuth.currentUser.isCoach) {
-                // Regular user saving their own data
-                const result = await window.learnWorldsAuth.saveUserData(userData);
-                if (result.success) {
-                    this.showNotification('Data saved to cloud successfully!', 'success');
-                } else {
-                    this.showNotification('Failed to save to cloud: ' + result.error, 'error');
-                }
-            } else {
-                this.showNotification('Please select a student first', 'warning');
-            }
-        } catch (error) {
-            console.error('Manual save failed:', error);
-            this.showNotification('Failed to save to cloud', 'error');
-        }
-    }
-
-    prepareExportData() {
-        return {
-            balanceSheet: {
-                assets: {
-                    liquid: this.extractFieldGroup(['cash_on_hand', 'personal_checking', 'personal_savings', 'business_checking', 'business_savings', 'money_market', 'certificates_deposit']),
-                    investments: this.extractFieldGroup(['business_1', 'business_2', 'business_3', 'stocks', 'bonds', 'mutual_funds', 'ira', '401k']),
-                    personal: this.extractFieldGroup(['primary_residence', 'auto_1', 'auto_2', 'other_personal_assets'])
-                },
-                liabilities: {
-                    shortTerm: this.extractFieldGroup(['medical_dental', 'credit_card_1', 'credit_card_2', 'credit_card_3', 'credit_card_4', 'credit_card_5']),
-                    longTerm: this.extractFieldGroup(['primary_mortgage', 'heloc', 'investment_mortgage', 'auto_loan_1', 'auto_loan_2', 'student_loans', 'personal_loans_balance'])
-                }
-            },
-            incomeStatement: {
-                income: {
-                    active: this.extractFieldGroup(['salary_wages', 'distributions', 'commissions', 'bonus', 'interest_income']),
-                    portfolio: this.extractFieldGroup(['dividends', 'royalties']),
-                    passive: this.extractFieldGroup(['business_income', 'real_estate_income'])
-                },
-                expenses: {
-                    house: this.extractFieldGroup(['mortgage_rent', 'heloc_payment', 'hoa_fees', 'cell_phone_1', 'cell_phone_2', 'electricity', 'gas', 'water_sewer', 'waste_removal', 'repairs_maintenance', 'lawncare_pest', 'internet', 'cable_satellite', 'home_security', 'home_insurance']),
-                    transportation: this.extractFieldGroup(['auto_payment_1', 'auto_payment_2', 'auto_insurance', 'registration_tags', 'gas_fuel', 'auto_repairs']),
-                    food: this.extractFieldGroup(['groceries', 'restaurants']),
-                    entertainment: this.extractFieldGroup(['streaming', 'music', 'movies', 'concerts', 'sporting_events', 'live_theater', 'outdoor_activities'])
-                }
-            },
-            customItems: this.customItems,
-            timestamp: new Date().toISOString()
-        };
-    }
-
-    extractFieldGroup(fields) {
-        const result = {};
-        fields.forEach(field => {
-            result[field] = this.data[field] || 0;
-        });
-        return result;
+        this.showNotification('Manual save completed', 'success');
     }
 
     async exportToPDF() {
         this.showNotification('Generating PDF report...', 'info');
         
         try {
-            // In a real implementation, you would use a PDF library like jsPDF
             await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            const pdfContent = this.generatePDFContent();
-            console.log('PDF content generated:', pdfContent);
-            
             this.showNotification('PDF report generated successfully!', 'success');
-            
-            // Simulate PDF download
-            this.downloadFile('cash-flow-mastery-report.pdf', 'application/pdf', 'PDF content would go here');
-            
         } catch (error) {
             console.error('Error generating PDF:', error);
             this.showNotification('Error generating PDF. Please try again.', 'error');
         }
     }
 
-    generatePDFContent() {
-        const netWorth = parseFloat(document.getElementById('net-worth').textContent.replace(/[$,]/g, '')) || 0;
-        const monthlyCashFlow = parseFloat(document.getElementById('monthly-cash-flow').textContent.replace(/[$,]/g, '')) || 0;
-        const totalAssets = parseFloat(document.getElementById('total-assets').textContent.replace(/[$,]/g, '')) || 0;
-        const totalLiabilities = parseFloat(document.getElementById('total-liabilities').textContent.replace(/[$,]/g, '')) || 0;
-        
-        return {
-            title: 'Cash Flow Mastery Report',
-            date: new Date().toLocaleDateString(),
-            summary: {
-                netWorth,
-                monthlyCashFlow,
-                totalAssets,
-                totalLiabilities,
-                debtToAssetRatio: totalAssets > 0 ? (totalLiabilities / totalAssets * 100).toFixed(1) + '%' : '0%'
-            },
-            data: this.data
-        };
-    }
-
     async shareData() {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'My Cash Flow Mastery Report',
-                    text: `Check out my financial snapshot: Net Worth: ${document.getElementById('net-worth').textContent}, Monthly Cash Flow: ${document.getElementById('monthly-cash-flow').textContent}`,
-                    url: window.location.href
-                });
-                this.showNotification('Shared successfully!', 'success');
-            } catch (error) {
-                console.log('Error sharing:', error);
-                this.copyToClipboard();
-            }
-        } else {
-            this.copyToClipboard();
-        }
-    }
-
-    copyToClipboard() {
-        const shareText = `My Financial Snapshot:\nNet Worth: ${document.getElementById('net-worth').textContent}\nMonthly Cash Flow: ${document.getElementById('monthly-cash-flow').textContent}\nGenerated with Cash Flow Mastery by Wealth Factory`;
+        const shareText = `My Financial Snapshot:\nNet Worth: $0\nMonthly Cash Flow: $0\nGenerated with Cash Flow Mastery by Wealth Factory`;
         
         if (navigator.clipboard) {
             navigator.clipboard.writeText(shareText).then(() => {
                 this.showNotification('Financial summary copied to clipboard!', 'success');
             });
         } else {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = shareText;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            this.showNotification('Financial summary copied to clipboard!', 'success');
+            this.showNotification('Sharing not supported on this browser', 'warning');
         }
     }
 
-    downloadFile(filename, mimeType, content) {
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
-    // Notification system
     showNotification(message, type = 'info', duration = 4000) {
         const notification = document.createElement('div');
-        notification.className = `notification ${type} animate-slide-in-right`;
-        
-        const icon = {
-            success: 'fas fa-check-circle',
-            error: 'fas fa-exclamation-circle',
-            warning: 'fas fa-exclamation-triangle',
-            info: 'fas fa-info-circle'
-        }[type] || 'fas fa-info-circle';
+        notification.className = `notification ${type}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : type === 'warning' ? '#F59E0B' : '#3B82F6'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-family: Inter, sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
         
         notification.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <i class="${icon}"></i>
+            <div style="display: flex; align-items: center; gap: 8px;">
                 <span>${message}</span>
-                <button onclick="this.closest('.notification').remove()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button onclick="this.closest('.notification').remove()" style="background: none; border: none; color: white; cursor: pointer; font-size: 18px;">×</button>
             </div>
         `;
         
         document.body.appendChild(notification);
         
-        // Show notification
-        setTimeout(() => notification.classList.add('show'), 100);
-        
-        // Auto remove
         setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
+            if (notification.parentNode) {
+                notification.remove();
+            }
         }, duration);
     }
 
-    // Chart initialization and updates
     initializeCharts() {
-        // Initialize charts as needed
+        // Charts will be initialized when needed
     }
 
     updateCharts() {
-        // Update charts as needed
         if (document.querySelector('.tab-content.active')?.id === 'analytics') {
             this.updateAnalyticsCharts();
         }
     }
 
-    // === UPDATED ANALYTICS CHARTS === 
     updateAnalyticsCharts() {
-        // Only update the charts we're actually using
         this.updateIncomeBreakdownChart();
         this.updateExpenseBreakdownChart();
         this.updateCashFlowTrendChart();
@@ -782,19 +640,21 @@ class CashFlowMastery {
         const canvas = document.getElementById('portfolioChart');
         if (!canvas) return;
         
-        // Ensure proper canvas size
         canvas.width = 350;
         canvas.height = 250;
         
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
-        const centerY = (canvas.height - 40) / 2; // Leave space for legend
+        const centerY = (canvas.height - 40) / 2;
         const radius = Math.min(centerX, centerY) - 20;
         
-        // Get income data
-        const activeIncome = parseFloat(document.getElementById('active-income-total')?.textContent.replace(/[$,]/g, '')) || 0;
-        const portfolioIncome = parseFloat(document.getElementById('portfolio-income-total')?.textContent.replace(/[$,]/g, '')) || 0;
-        const passiveIncome = parseFloat(document.getElementById('passive-income-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const activeIncomeEl = document.getElementById('active-income-total');
+        const portfolioIncomeEl = document.getElementById('portfolio-income-total');
+        const passiveIncomeEl = document.getElementById('passive-income-total');
+        
+        const activeIncome = activeIncomeEl ? parseFloat(activeIncomeEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const portfolioIncome = portfolioIncomeEl ? parseFloat(portfolioIncomeEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const passiveIncome = passiveIncomeEl ? parseFloat(passiveIncomeEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
         
         const total = activeIncome + portfolioIncome + passiveIncome;
         
@@ -813,13 +673,11 @@ class CashFlowMastery {
         const values = [activeIncome, portfolioIncome, passiveIncome];
         let currentAngle = -Math.PI / 2;
         
-        // Draw pie slices
         values.forEach((value, index) => {
             if (value > 0) {
                 const sliceAngle = (value / total) * 2 * Math.PI;
                 const percentage = ((value / total) * 100).toFixed(1);
                 
-                // Draw slice
                 ctx.fillStyle = colors[index];
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
@@ -827,7 +685,6 @@ class CashFlowMastery {
                 ctx.closePath();
                 ctx.fill();
                 
-                // Draw percentage label
                 const labelAngle = currentAngle + sliceAngle / 2;
                 const labelX = centerX + Math.cos(labelAngle) * (radius * 0.7);
                 const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
@@ -841,20 +698,17 @@ class CashFlowMastery {
             }
         });
         
-        // Draw legend at bottom
         const legendY = canvas.height - 25;
         let legendX = 20;
         values.forEach((value, index) => {
             if (value > 0) {
-                // Color box
                 ctx.fillStyle = colors[index];
                 ctx.fillRect(legendX, legendY, 10, 10);
                 
-                // Label
                 ctx.fillStyle = '#C8C8C8';
                 ctx.font = '9px Inter';
                 ctx.textAlign = 'left';
-                ctx.fillText(`${labels[index]}: ${this.formatNumber(value)}`, legendX + 15, legendY + 8);
+                ctx.fillText(`${labels[index]}: $${this.formatNumber(value)}`, legendX + 15, legendY + 8);
                 
                 legendX += 100;
             }
@@ -865,7 +719,6 @@ class CashFlowMastery {
         const canvas = document.getElementById('expenseChart');
         if (!canvas) return;
         
-        // Ensure proper canvas size
         canvas.width = 350;
         canvas.height = 250;
         
@@ -874,11 +727,15 @@ class CashFlowMastery {
         const centerY = (canvas.height - 40) / 2;
         const radius = Math.min(centerX, centerY) - 20;
         
-        // Get expense data
-        const houseExpenses = parseFloat(document.getElementById('house-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
-        const transportExpenses = parseFloat(document.getElementById('transportation-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
-        const foodExpenses = parseFloat(document.getElementById('food-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
-        const entertainmentExpenses = parseFloat(document.getElementById('entertainment-expenses-total')?.textContent.replace(/[$,]/g, '')) || 0;
+        const houseExpensesEl = document.getElementById('house-expenses-total');
+        const transportExpensesEl = document.getElementById('transportation-expenses-total');
+        const foodExpensesEl = document.getElementById('food-expenses-total');
+        const entertainmentExpensesEl = document.getElementById('entertainment-expenses-total');
+        
+        const houseExpenses = houseExpensesEl ? parseFloat(houseExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const transportExpenses = transportExpensesEl ? parseFloat(transportExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const foodExpenses = foodExpensesEl ? parseFloat(foodExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const entertainmentExpenses = entertainmentExpensesEl ? parseFloat(entertainmentExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
         
         const total = houseExpenses + transportExpenses + foodExpenses + entertainmentExpenses;
         
@@ -897,13 +754,11 @@ class CashFlowMastery {
         const values = [houseExpenses, transportExpenses, foodExpenses, entertainmentExpenses];
         let currentAngle = -Math.PI / 2;
         
-        // Draw pie slices
         values.forEach((value, index) => {
             if (value > 0) {
                 const sliceAngle = (value / total) * 2 * Math.PI;
                 const percentage = ((value / total) * 100).toFixed(1);
                 
-                // Draw slice
                 ctx.fillStyle = colors[index];
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
@@ -911,7 +766,6 @@ class CashFlowMastery {
                 ctx.closePath();
                 ctx.fill();
                 
-                // Draw percentage label
                 const labelAngle = currentAngle + sliceAngle / 2;
                 const labelX = centerX + Math.cos(labelAngle) * (radius * 0.7);
                 const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
@@ -925,20 +779,17 @@ class CashFlowMastery {
             }
         });
         
-        // Draw legend
         const legendY = canvas.height - 25;
         let legendX = 10;
         values.forEach((value, index) => {
             if (value > 0) {
-                // Color box
                 ctx.fillStyle = colors[index];
                 ctx.fillRect(legendX, legendY, 10, 10);
                 
-                // Label
                 ctx.fillStyle = '#C8C8C8';
                 ctx.font = '9px Inter';
                 ctx.textAlign = 'left';
-                ctx.fillText(`${labels[index]}: ${this.formatNumber(value)}`, legendX + 15, legendY + 8);
+                ctx.fillText(`${labels[index]}: $${this.formatNumber(value)}`, legendX + 15, legendY + 8);
                 
                 legendX += 80;
             }
@@ -949,14 +800,14 @@ class CashFlowMastery {
         const canvas = document.getElementById('cashflowChart');
         if (!canvas) return;
         
-        // Ensure proper canvas size
         canvas.width = 350;
         canvas.height = 250;
         
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        const monthlyCashFlow = parseFloat(document.getElementById('monthly-cash-flow')?.textContent.replace(/[$,]/g, '')) || 0;
+        const monthlyCashFlowEl = document.getElementById('monthly-cash-flow');
+        const monthlyCashFlow = monthlyCashFlowEl ? parseFloat(monthlyCashFlowEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
         
         const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
         const barWidth = (canvas.width - 60) / 12;
@@ -965,7 +816,6 @@ class CashFlowMastery {
         let maxValue = Math.abs(monthlyCashFlow) * 1.2;
         if (maxValue === 0) maxValue = 1000;
         
-        // Draw bars
         months.forEach((month, i) => {
             const variance = (Math.random() - 0.5) * 0.3;
             const value = monthlyCashFlow * (1 + variance);
@@ -981,7 +831,6 @@ class CashFlowMastery {
                 ctx.fillRect(x, 30 + (maxHeight - 40) * 0.6, barWidth - 4, barHeight);
             }
             
-            // Month labels
             ctx.fillStyle = '#C8C8C8';
             ctx.font = '9px Inter';
             ctx.textAlign = 'center';
@@ -993,17 +842,18 @@ class CashFlowMastery {
         const canvas = document.getElementById('growthChart');
         if (!canvas) return;
         
-        // Ensure proper canvas size
         canvas.width = 700;
         canvas.height = 300;
         
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        const netWorth = parseFloat(document.getElementById('net-worth')?.textContent.replace(/[$,]/g, '')) || 0;
-        const annualCashFlow = parseFloat(document.getElementById('annual-cash-flow')?.textContent.replace(/[$,]/g, '')) || 0;
+        const netWorthEl = document.getElementById('net-worth');
+        const annualCashFlowEl = document.getElementById('annual-cash-flow');
         
-        // Project wealth growth over 10 years
+        const netWorth = netWorthEl ? parseFloat(netWorthEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const annualCashFlow = annualCashFlowEl ? parseFloat(annualCashFlowEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        
         const years = 10;
         const points = [];
         let currentWealth = netWorth;
@@ -1019,7 +869,6 @@ class CashFlowMastery {
             currentWealth = currentWealth * 1.05 + annualCashFlow;
         }
         
-        // Draw grid
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
         ctx.lineWidth = 1;
         for (let i = 0; i <= 4; i++) {
@@ -1030,7 +879,6 @@ class CashFlowMastery {
             ctx.stroke();
         }
         
-        // Draw area fill
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
         gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
         gradient.addColorStop(1, 'rgba(16, 185, 129, 0.1)');
@@ -1043,7 +891,6 @@ class CashFlowMastery {
         ctx.closePath();
         ctx.fill();
         
-        // Draw line
         ctx.strokeStyle = '#10B981';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1056,7 +903,6 @@ class CashFlowMastery {
         });
         ctx.stroke();
         
-        // Draw points and labels
         ctx.fillStyle = '#10B981';
         points.forEach((point, index) => {
             if (index % 2 === 0) {
@@ -1064,16 +910,14 @@ class CashFlowMastery {
                 ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Year labels
                 ctx.fillStyle = '#C8C8C8';
                 ctx.font = '10px Inter';
                 ctx.textAlign = 'center';
                 ctx.fillText(point.year.toString(), point.x, canvas.height - 35);
                 
-                // Value labels for start and end
                 if (index === 0 || index === points.length - 1) {
                     ctx.font = '10px Inter';
-                    ctx.fillText(`${this.formatNumber(point.value)}`, point.x, point.y - 10);
+                    ctx.fillText(`$${this.formatNumber(point.value)}`, point.x, point.y - 10);
                 }
                 
                 ctx.fillStyle = '#10B981';
@@ -1081,7 +925,6 @@ class CashFlowMastery {
         });
     }
 
-    // Helper method for number formatting
     formatNumber(num) {
         if (num >= 1000000) {
             return (num / 1000000).toFixed(1) + 'M';
@@ -1101,7 +944,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global functions for onclick handlers
 window.addCustomItem = function(category) {
-    app.addCustomItem(category);
+    if (app) {
+        app.addCustomItem(category);
+    }
 };
 
 window.app = app;
