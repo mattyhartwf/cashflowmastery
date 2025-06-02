@@ -22,47 +22,22 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 </head>
 <body>
-  <!-- ADD THIS SCRIPT TAG RIGHT BEFORE THE CLOSING </body> TAG IN YOUR INDEX.HTML -->
-<script>
-// Emergency loading screen fix - add this right before </body>
-document.addEventListener('DOMContentLoaded', function() {
-    // Force remove loading screen after 500ms
-    setTimeout(function() {
-        const loadingScreen = document.getElementById('loading-screen');
-        const appContainer = document.getElementById('app');
-        
-        if (loadingScreen) {
-            loadingScreen.style.display = 'none';
-            loadingScreen.classList.add('hidden');
-        }
-        
-        if (appContainer) {
-            appContainer.style.display = 'block';
-            appContainer.classList.add('animate-fade-in');
-        }
-        
-        console.log('Loading screen manually removed');
-    }, 500);
-});
-
-// Backup - force remove after 2 seconds no matter what
-setTimeout(function() {
-    const loadingScreen = document.getElementById('loading-screen');
-    const appContainer = document.getElementById('app');
-    
-    if (loadingScreen && loadingScreen.style.display !== 'none') {
-        loadingScreen.style.display = 'none';
-        console.log('Emergency loading screen removal');
-    }
-    
-    if (appContainer) {
-        appContainer.style.display = 'block';
-    }
-}, 2000);
-</script>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="wealth-logo-loader">
+                <i class="fas fa-coins"></i>
+                <span>WEALTH FACTORY</span>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p>Loading your financial dashboard...</p>
+        </div>
+    </div>
 
     <!-- Main Application -->
-    <div id="app" class="app-container">
+    <div id="app" class="app-container" style="display: none;">
         <!-- Navigation Header -->
         <nav class="premium-nav">
             <div class="nav-container">
@@ -255,7 +230,7 @@ setTimeout(function() {
                             </div>
                             
                             <div class="categories-grid expenses-categories">
-                                <!-- House Expenses - UPDATED WITH NEW BILLS -->
+                                <!-- House Expenses -->
                                 <div class="category-card expanded">
                                     <div class="category-header">
                                         <h3><i class="fas fa-home"></i> House</h3>
@@ -629,3 +604,289 @@ setTimeout(function() {
                                     </div>
                                     <button class="add-item-btn" onclick="addCustomItem('personal-assets')">
                                         <i class="fas fa-plus"></i>
+                                        Add Custom Personal Asset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Divider Line -->
+                        <div class="section-divider">
+                            <div class="divider-line"></div>
+                            <div class="divider-text">Liabilities</div>
+                            <div class="divider-line"></div>
+                        </div>
+
+                        <!-- Liabilities Section (Bottom Half) -->
+                        <div class="financial-section liabilities-section-bottom">
+                            <div class="section-header">
+                                <h2 class="section-title">
+                                    <i class="fas fa-minus-circle"></i>
+                                    Liabilities
+                                </h2>
+                                <div class="section-total" id="total-liabilities">$0</div>
+                            </div>
+                            
+                            <div class="categories-grid liabilities-categories">
+                                <!-- Short-term Liabilities -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-clock"></i> Short-term Liabilities</h3>
+                                        <div class="category-total" id="short-term-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="short-term-liabilities-container">
+                                        <div class="financial-item">
+                                            <label>Medical/Dental</label>
+                                            <input type="number" class="premium-input" data-field="medical_dental" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Credit Card #1</label>
+                                            <input type="number" class="premium-input" data-field="credit_card_1" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Credit Card #2</label>
+                                            <input type="number" class="premium-input" data-field="credit_card_2" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Credit Card #3</label>
+                                            <input type="number" class="premium-input" data-field="credit_card_3" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Credit Card #4</label>
+                                            <input type="number" class="premium-input" data-field="credit_card_4" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Credit Card #5</label>
+                                            <input type="number" class="premium-input" data-field="credit_card_5" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('short-term-liabilities')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Short-term Liability
+                                    </button>
+                                </div>
+
+                                <!-- Long-term Liabilities -->
+                                <div class="category-card expanded">
+                                    <div class="category-header">
+                                        <h3><i class="fas fa-calendar-alt"></i> Long-term Liabilities</h3>
+                                        <div class="category-total" id="long-term-total">$0</div>
+                                    </div>
+                                    <div class="items-container expanded-items" id="long-term-liabilities-container">
+                                        <div class="financial-item">
+                                            <label>Primary Mortgage</label>
+                                            <input type="number" class="premium-input" data-field="primary_mortgage" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>HELOC</label>
+                                            <input type="number" class="premium-input" data-field="heloc" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Investment Mortgage</label>
+                                            <input type="number" class="premium-input" data-field="investment_mortgage" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Auto Loan #1</label>
+                                            <input type="number" class="premium-input" data-field="auto_loan_1" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Auto Loan #2</label>
+                                            <input type="number" class="premium-input" data-field="auto_loan_2" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Student Loans</label>
+                                            <input type="number" class="premium-input" data-field="student_loans" step="0.01" placeholder="0.00">
+                                        </div>
+                                        <div class="financial-item">
+                                            <label>Personal Loans Balance</label>
+                                            <input type="number" class="premium-input" data-field="personal_loans_balance" step="0.01" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <button class="add-item-btn" onclick="addCustomItem('long-term-liabilities')">
+                                        <i class="fas fa-plus"></i>
+                                        Add Custom Long-term Liability
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Worth Summary (Right Sidebar) -->
+                    <div class="financial-section summary-section-sidebar">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-trophy"></i>
+                                Net Worth
+                            </h2>
+                            <div class="section-total" id="net-worth">$0</div>
+                        </div>
+                        
+                        <div class="summary-cards-sidebar">
+                            <div class="summary-card">
+                                <h4>Balance Summary</h4>
+                                <div class="summary-items">
+                                    <div class="summary-item">
+                                        <span>Total Assets</span>
+                                        <span id="summary-assets">$0</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>Total Liabilities</span>
+                                        <span id="summary-liabilities">$0</span>
+                                    </div>
+                                    <div class="summary-item primary">
+                                        <span>Net Worth</span>
+                                        <span id="summary-net-worth">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <h4>Asset Allocation</h4>
+                                <div class="chart-container">
+                                    <canvas id="assetAllocationChart" width="200" height="200"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <h4>Liability Breakdown</h4>
+                                <div class="chart-container">
+                                    <canvas id="liabilityBreakdownChart" width="200" height="200"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="summary-card">
+                                <h4>Key Ratios</h4>
+                                <div class="summary-items">
+                                    <div class="summary-item">
+                                        <span>Debt-to-Asset</span>
+                                        <span id="debt-to-asset-ratio">0%</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>Liquidity Ratio</span>
+                                        <span id="liquidity-ratio">0%</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>Savings Rate</span>
+                                        <span id="savings-rate">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="analytics-dashboard">
+                    <div class="analytics-header">
+                        <h2>Financial Analytics</h2>
+                        <p>Comprehensive insights into your financial health and growth potential</p>
+                    </div>
+
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h3>Income Breakdown</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="portfolioChart" width="350" height="250"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h3>Expense Analysis</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="expenseChart" width="350" height="250"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h3>Cash Flow Trend</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="cashflowChart" width="350" height="250"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card">
+                            <h3>Financial Health Score</h3>
+                            <div class="health-score">
+                                <div class="score-circle">
+                                    <span id="health-score">85</span>
+                                </div>
+                                <div class="score-details">
+                                    <div class="score-item">
+                                        <span>Debt-to-Income</span>
+                                        <span id="debt-income-ratio">25%</span>
+                                    </div>
+                                    <div class="score-item">
+                                        <span>Emergency Fund</span>
+                                        <span>3.2 months</span>
+                                    </div>
+                                    <div class="score-item">
+                                        <span>Savings Rate</span>
+                                        <span>15%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card large">
+                            <h3>Wealth Projection (10 Years)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="growthChart" width="700" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="utils.js"></script>
+    <script src="storage.js"></script>
+    <script src="calculations.js"></script>
+    <script src="charts.js"></script>
+    <script src="auth-storage.js"></script>
+    <script src="learnworlds-auth.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Emergency loading screen fix -->
+    <script>
+        // Emergency loading screen fix
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force remove loading screen after 500ms
+            setTimeout(function() {
+                const loadingScreen = document.getElementById('loading-screen');
+                const appContainer = document.getElementById('app');
+                
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                    loadingScreen.classList.add('hidden');
+                }
+                
+                if (appContainer) {
+                    appContainer.style.display = 'block';
+                    appContainer.classList.add('animate-fade-in');
+                }
+                
+                console.log('Loading screen manually removed');
+            }, 500);
+        });
+
+        // Backup - force remove after 2 seconds no matter what
+        setTimeout(function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const appContainer = document.getElementById('app');
+            
+            if (loadingScreen && loadingScreen.style.display !== 'none') {
+                loadingScreen.style.display = 'none';
+                console.log('Emergency loading screen removal');
+            }
+            
+            if (appContainer) {
+                appContainer.style.display = 'block';
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
