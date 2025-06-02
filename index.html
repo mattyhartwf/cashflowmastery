@@ -22,19 +22,44 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loader">
-            <div class="wealth-logo-loader">
-                <i class="fas fa-coins"></i>
-                <span>WEALTH FACTORY</span>
-            </div>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-            </div>
-            <p>Loading your financial blueprint...</p>
-        </div>
-    </div>
+  <!-- ADD THIS SCRIPT TAG RIGHT BEFORE THE CLOSING </body> TAG IN YOUR INDEX.HTML -->
+<script>
+// Emergency loading screen fix - add this right before </body>
+document.addEventListener('DOMContentLoaded', function() {
+    // Force remove loading screen after 500ms
+    setTimeout(function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        const appContainer = document.getElementById('app');
+        
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+            loadingScreen.classList.add('hidden');
+        }
+        
+        if (appContainer) {
+            appContainer.style.display = 'block';
+            appContainer.classList.add('animate-fade-in');
+        }
+        
+        console.log('Loading screen manually removed');
+    }, 500);
+});
+
+// Backup - force remove after 2 seconds no matter what
+setTimeout(function() {
+    const loadingScreen = document.getElementById('loading-screen');
+    const appContainer = document.getElementById('app');
+    
+    if (loadingScreen && loadingScreen.style.display !== 'none') {
+        loadingScreen.style.display = 'none';
+        console.log('Emergency loading screen removal');
+    }
+    
+    if (appContainer) {
+        appContainer.style.display = 'block';
+    }
+}, 2000);
+</script>
 
     <!-- Main Application -->
     <div id="app" class="app-container">
