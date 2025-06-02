@@ -540,8 +540,8 @@
                     return;
                 }
 
-                if (!apiKey.startsWith('key')) {
-                    this.showStatus('❌ API Key should start with "key"', 'error');
+                if (!apiKey.startsWith('key') && !apiKey.startsWith('pat')) {
+                    this.showStatus('❌ API Key should start with "key" or "pat"', 'error');
                     return;
                 }
 
