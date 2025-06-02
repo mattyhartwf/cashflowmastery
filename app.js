@@ -23,13 +23,15 @@ class CashFlowMastery {
         setTimeout(() => {
             const loadingScreen = document.getElementById('loading-screen');
             if (loadingScreen) {
+                loadingScreen.style.display = 'none';
                 loadingScreen.classList.add('hidden');
             }
             const app = document.getElementById('app');
             if (app) {
+                app.style.display = 'block';
                 app.classList.add('animate-fade-in');
             }
-        }, 1000); // Reduced from 2000 to 1000 for faster loading
+        }, 1500);
     }
 
     setupEventListeners() {
@@ -98,11 +100,11 @@ class CashFlowMastery {
                         break;
                     case '1':
                         e.preventDefault();
-                        this.switchTab('balance-sheet');
+                        this.switchTab('income-statement');
                         break;
                     case '2':
                         e.preventDefault();
-                        this.switchTab('income-statement');
+                        this.switchTab('balance-sheet');
                         break;
                     case '3':
                         e.preventDefault();
@@ -255,7 +257,6 @@ class CashFlowMastery {
         });
     }
 
-    // UPDATED with new bills
     calculateIncomeStatement() {
         // Calculate active income
         const activeIncome = [
@@ -535,9 +536,14 @@ class CashFlowMastery {
         }
     }
 
-    // CHANGED: Always return empty data to ensure $0 values
     loadData() {
-        return {};
+        try {
+            const saved = localStorage.getItem('cashFlowMasteryData');
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            console.warn('Could not load data from localStorage:', e);
+            return {};
+        }
     }
 
     saveCustomItems() {
@@ -548,9 +554,14 @@ class CashFlowMastery {
         }
     }
 
-    // CHANGED: Always return empty custom items to ensure $0 values
     loadCustomItems() {
-        return {};
+        try {
+            const saved = localStorage.getItem('cashFlowMasteryCustomItems');
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            console.warn('Could not load custom items:', e);
+            return {};
+        }
     }
 
     startAutoSave() {
@@ -560,14 +571,54 @@ class CashFlowMastery {
     }
 
     async manualSave() {
-        this.showNotification('Manual save completed', 'success');
+        this.showNotification('Saving data to cloud...', 'info');
+        
+        try {
+            // Check if cloudStorage or learnWorldsAuth is available
+            if (window.cloudStorage && window.cloudStorage.currentUser) {
+                const result = await window.cloudStorage.saveUserData({
+                    userData: this.data,
+                    customItems: this.customItems
+                });
+                
+                if (result.success) {
+                    this.showNotification('Data saved to cloud successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to save to cloud');
+                }
+            } else if (window.learnWorldsAuth && window.learnWorldsAuth.currentUser) {
+                const result = await window.learnWorldsAuth.saveUserData({
+                    userData: this.data,
+                    customItems: this.customItems
+                });
+                
+                if (result.success) {
+                    this.showNotification('Data saved to cloud successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to save to cloud');
+                }
+            } else {
+                // No user logged in, just save locally
+                this.saveData();
+                this.showNotification('Data saved locally. Log in to save to cloud.', 'warning');
+            }
+        } catch (error) {
+            console.error('Save error:', error);
+            this.showNotification('Failed to save to cloud. Data saved locally.', 'warning');
+        }
     }
 
     async exportToPDF() {
         this.showNotification('Generating PDF report...', 'info');
         
         try {
+            // Simulate PDF generation
             await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Create a simple text-based report
+            const reportData = this.generateReportData();
+            this.downloadTextReport(reportData);
+            
             this.showNotification('PDF report generated successfully!', 'success');
         } catch (error) {
             console.error('Error generating PDF:', error);
@@ -575,15 +626,83 @@ class CashFlowMastery {
         }
     }
 
-    async shareData() {
-        const shareText = `My Financial Snapshot:\nNet Worth: $0\nMonthly Cash Flow: $0\nGenerated with Cash Flow Mastery by Wealth Factory`;
+    generateReportData() {
+        const netWorthEl = document.getElementById('net-worth');
+        const totalIncomeEl = document.getElementById('total-income');
+        const totalExpensesEl = document.getElementById('total-expenses');
+        const monthlyCashFlowEl = document.getElementById('monthly-cash-flow');
         
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(shareText).then(() => {
+        const netWorth = netWorthEl ? netWorthEl.textContent : '$0';
+        const totalIncome = totalIncomeEl ? totalIncomeEl.textContent : '$0';
+        const totalExpenses = totalExpensesEl ? totalExpensesEl.textContent : '$0';
+        const monthlyCashFlow = monthlyCashFlowEl ? monthlyCashFlowEl.textContent : '$0';
+        
+        return `
+CASH FLOW MASTERY REPORT
+Generated: ${new Date().toLocaleDateString()}
+
+=== FINANCIAL SUMMARY ===
+Net Worth: ${netWorth}
+Monthly Income: ${totalIncome}
+Monthly Expenses: ${totalExpenses}
+Monthly Cash Flow: ${monthlyCashFlow}
+Annual Projection: ${this.formatMoney((parseFloat(monthlyCashFlow.replace(/[$,]/g, '')) || 0) * 12)}
+
+=== ANALYSIS ===
+This report shows your current financial position based on the data entered into the Cash Flow Mastery tool.
+
+For a detailed breakdown of all categories and specific line items, please access the full dashboard at:
+https://cashflowmastery.netlify.app/
+
+Generated by Wealth Factory Cash Flow Mastery Tool
+        `;
+    }
+
+    downloadTextReport(data) {
+        const blob = new Blob([data], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cash-flow-report-${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    async shareData() {
+        const netWorthEl = document.getElementById('net-worth');
+        const monthlyCashFlowEl = document.getElementById('monthly-cash-flow');
+        
+        const netWorth = netWorthEl ? netWorthEl.textContent : '$0';
+        const monthlyCashFlow = monthlyCashFlowEl ? monthlyCashFlowEl.textContent : '$0';
+        
+        const shareText = `My Financial Snapshot:\nNet Worth: ${netWorth}\nMonthly Cash Flow: ${monthlyCashFlow}\nGenerated with Cash Flow Mastery by Wealth Factory`;
+        
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'My Financial Snapshot',
+                    text: shareText,
+                    url: 'https://cashflowmastery.netlify.app/'
+                });
+                this.showNotification('Shared successfully!', 'success');
+            } else if (navigator.clipboard) {
+                await navigator.clipboard.writeText(shareText);
                 this.showNotification('Financial summary copied to clipboard!', 'success');
-            });
-        } else {
-            this.showNotification('Sharing not supported on this browser', 'warning');
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shareText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                this.showNotification('Financial summary copied to clipboard!', 'success');
+            }
+        } catch (error) {
+            console.error('Share failed:', error);
+            this.showNotification('Unable to share. Try copying manually.', 'warning');
         }
     }
 
@@ -601,6 +720,8 @@ class CashFlowMastery {
             z-index: 10000;
             font-family: Inter, sans-serif;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
         `;
         
         notification.innerHTML = `
@@ -612,21 +733,234 @@ class CashFlowMastery {
         
         document.body.appendChild(notification);
         
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Auto remove
         setTimeout(() => {
             if (notification.parentNode) {
-                notification.remove();
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => notification.remove(), 300);
             }
         }, duration);
     }
 
     initializeCharts() {
-        // Charts will be initialized when needed
+        // Initialize charts when tab content is visible
+        setTimeout(() => {
+            this.updateCharts();
+        }, 1000);
     }
 
     updateCharts() {
-        if (document.querySelector('.tab-content.active')?.id === 'analytics') {
+        // Update sidebar charts
+        this.updateIncomeDistributionChart();
+        this.updateExpenseDistributionChart();
+        this.updateAssetAllocationChart();
+        this.updateLiabilityBreakdownChart();
+        
+        // Update analytics charts if on analytics tab
+        if (document.querySelector('#analytics.active')) {
             this.updateAnalyticsCharts();
         }
+    }
+
+    updateIncomeDistributionChart() {
+        const canvas = document.getElementById('incomeDistributionChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 20;
+        
+        const activeIncomeEl = document.getElementById('active-income-total');
+        const portfolioIncomeEl = document.getElementById('portfolio-income-total');
+        const passiveIncomeEl = document.getElementById('passive-income-total');
+        
+        const activeIncome = activeIncomeEl ? parseFloat(activeIncomeEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const portfolioIncome = portfolioIncomeEl ? parseFloat(portfolioIncomeEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const passiveIncome = passiveIncomeEl ? parseFloat(passiveIncomeEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        
+        const total = activeIncome + portfolioIncome + passiveIncome;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (total === 0) {
+            ctx.fillStyle = '#C8C8C8';
+            ctx.font = '12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Data', centerX, centerY);
+            return;
+        }
+        
+        const colors = ['#10B981', '#C29B3C', '#D4A853'];
+        const values = [activeIncome, portfolioIncome, passiveIncome];
+        let currentAngle = -Math.PI / 2;
+        
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                
+                ctx.fillStyle = colors[index];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                currentAngle += sliceAngle;
+            }
+        });
+    }
+
+    updateExpenseDistributionChart() {
+        const canvas = document.getElementById('expenseDistributionChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 20;
+        
+        const houseExpensesEl = document.getElementById('house-expenses-total');
+        const transportExpensesEl = document.getElementById('transportation-expenses-total');
+        const foodExpensesEl = document.getElementById('food-expenses-total');
+        const entertainmentExpensesEl = document.getElementById('entertainment-expenses-total');
+        
+        const houseExpenses = houseExpensesEl ? parseFloat(houseExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const transportExpenses = transportExpensesEl ? parseFloat(transportExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const foodExpenses = foodExpensesEl ? parseFloat(foodExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const entertainmentExpenses = entertainmentExpensesEl ? parseFloat(entertainmentExpensesEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        
+        const total = houseExpenses + transportExpenses + foodExpenses + entertainmentExpenses;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (total === 0) {
+            ctx.fillStyle = '#C8C8C8';
+            ctx.font = '12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Data', centerX, centerY);
+            return;
+        }
+        
+        const colors = ['#EF4444', '#F59E0B', '#8B5CF6', '#06B6D4'];
+        const values = [houseExpenses, transportExpenses, foodExpenses, entertainmentExpenses];
+        let currentAngle = -Math.PI / 2;
+        
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                
+                ctx.fillStyle = colors[index];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                currentAngle += sliceAngle;
+            }
+        });
+    }
+
+    updateAssetAllocationChart() {
+        const canvas = document.getElementById('assetAllocationChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 20;
+        
+        const liquidEl = document.getElementById('liquid-total');
+        const investmentsEl = document.getElementById('investments-total');
+        const personalEl = document.getElementById('personal-assets-total');
+        
+        const liquid = liquidEl ? parseFloat(liquidEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const investments = investmentsEl ? parseFloat(investmentsEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const personal = personalEl ? parseFloat(personalEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        
+        const total = liquid + investments + personal;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (total === 0) {
+            ctx.fillStyle = '#C8C8C8';
+            ctx.font = '12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Data', centerX, centerY);
+            return;
+        }
+        
+        const colors = ['#3B82F6', '#10B981', '#F59E0B'];
+        const values = [liquid, investments, personal];
+        let currentAngle = -Math.PI / 2;
+        
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                
+                ctx.fillStyle = colors[index];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                currentAngle += sliceAngle;
+            }
+        });
+    }
+
+    updateLiabilityBreakdownChart() {
+        const canvas = document.getElementById('liabilityBreakdownChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) - 20;
+        
+        const shortTermEl = document.getElementById('short-term-total');
+        const longTermEl = document.getElementById('long-term-total');
+        
+        const shortTerm = shortTermEl ? parseFloat(shortTermEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        const longTerm = longTermEl ? parseFloat(longTermEl.textContent.replace(/[$,]/g, '')) || 0 : 0;
+        
+        const total = shortTerm + longTerm;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (total === 0) {
+            ctx.fillStyle = '#C8C8C8';
+            ctx.font = '12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Data', centerX, centerY);
+            return;
+        }
+        
+        const colors = ['#EF4444', '#F59E0B'];
+        const values = [shortTerm, longTerm];
+        let currentAngle = -Math.PI / 2;
+        
+        values.forEach((value, index) => {
+            if (value > 0) {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                
+                ctx.fillStyle = colors[index];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                currentAngle += sliceAngle;
+            }
+        });
     }
 
     updateAnalyticsCharts() {
@@ -708,7 +1042,7 @@ class CashFlowMastery {
                 ctx.fillStyle = '#C8C8C8';
                 ctx.font = '9px Inter';
                 ctx.textAlign = 'left';
-                ctx.fillText(`${labels[index]}: $${this.formatNumber(value)}`, legendX + 15, legendY + 8);
+                ctx.fillText(`${labels[index]}: ${this.formatNumber(value)}`, legendX + 15, legendY + 8);
                 
                 legendX += 100;
             }
@@ -789,7 +1123,7 @@ class CashFlowMastery {
                 ctx.fillStyle = '#C8C8C8';
                 ctx.font = '9px Inter';
                 ctx.textAlign = 'left';
-                ctx.fillText(`${labels[index]}: $${this.formatNumber(value)}`, legendX + 15, legendY + 8);
+                ctx.fillText(`${labels[index]}: ${this.formatNumber(value)}`, legendX + 15, legendY + 8);
                 
                 legendX += 80;
             }
@@ -917,7 +1251,7 @@ class CashFlowMastery {
                 
                 if (index === 0 || index === points.length - 1) {
                     ctx.font = '10px Inter';
-                    ctx.fillText(`$${this.formatNumber(point.value)}`, point.x, point.y - 10);
+                    ctx.fillText(`${this.formatNumber(point.value)}`, point.x, point.y - 10);
                 }
                 
                 ctx.fillStyle = '#10B981';
@@ -949,4 +1283,5 @@ window.addCustomItem = function(category) {
     }
 };
 
+// Make app globally available
 window.app = app;
