@@ -1,16 +1,10 @@
-/* === LearnWorlds Integration & Single Sign-On === */
+/* === LearnWorlds Integration & Single Sign-On - Airtable Edition === */
 
 class LearnWorldsIntegration {
     constructor() {
         this.isInLearnWorlds = this.detectLearnWorlds();
         this.currentUser = null;
         this.coachAccess = false;
-        this.config = {
-            googleSheets: {
-                scriptUrl: 'https://script.google.com/macros/s/AKfycbwKwA6vOa1Au19x61NI4xfnGQWfpm8uvb8_gLzhHLvbHQ-Vtr8GSrmFudgtvaDykxox/exec',
-                spreadsheetId: '1YPNsbdZC7GiArdT4kNKqyLo_HuU-HQwwXLQ8RiGkZc0'
-            }
-        };
         this.init();
     }
 
@@ -200,7 +194,7 @@ class LearnWorldsIntegration {
                 </form>
                 
                 <div class="login-info">
-                    <p><i class="fas fa-shield-alt"></i> Your data is securely stored and encrypted</p>
+                    <p><i class="fas fa-shield-alt"></i> Your data is securely stored in Airtable</p>
                     <p><i class="fas fa-globe"></i> Access your information from any device</p>
                     <p><i class="fas fa-save"></i> Automatic cloud backup and sync</p>
                 </div>
@@ -323,7 +317,7 @@ class LearnWorldsIntegration {
         coachPanel.innerHTML = `
             <div class="coach-header">
                 <h3><i class="fas fa-users"></i> Coach Dashboard</h3>
-                <p>Access and manage student financial data</p>
+                <p>Access and manage student financial data with Airtable</p>
             </div>
             
             <div class="coach-actions">
@@ -413,25 +407,10 @@ class LearnWorldsIntegration {
             return;
         }
         
-        this.showLoading('Loading student data...');
+        this.showLoading('Loading student data from Airtable...');
         
         try {
-            const response = await fetch(this.config.googleSheets.scriptUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'load',
-                    email: studentEmail
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await window.airtableIntegration.loadUserData(studentEmail);
             
             this.hideLoading();
             
@@ -530,35 +509,19 @@ class LearnWorldsIntegration {
             return;
         }
         
-        this.showLoading('Saving student data...');
+        this.showLoading('Saving student data to Airtable...');
         
         try {
             const userData = {
                 email: this.currentStudentEmail,
                 name: this.currentStudentName,
-                timestamp: new Date().toISOString(),
                 data: window.app.data,
                 isCoach: false, // This is student data
                 savedByCoach: this.currentUser.email,
                 source: 'coach_entry'
             };
             
-            const response = await fetch(this.config.googleSheets.scriptUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'save',
-                    userData: userData
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await window.airtableIntegration.saveUserData(userData);
             
             this.hideLoading();
             
@@ -581,31 +544,25 @@ class LearnWorldsIntegration {
     }
 
     async listAllStudents() {
-        this.showLoading('Loading all students...');
+        this.showLoading('Loading all students from Airtable...');
         
         try {
-            const response = await fetch(this.config.googleSheets.scriptUrl, {
-                method: 'POST',
+            const response = await fetch(window.airtableIntegration.apiUrl, {
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'list'
-                })
+                    'Authorization': `Bearer ${window.airtableIntegration.apiKey}`,
+                    'Content-Type': 'application/json'
+                }
             });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
             
             this.hideLoading();
             
-            if (result.success) {
-                this.displayStudentsList(result.users || []);
+            if (response.ok) {
+                const data = await response.json();
+                this.displayStudentsList(data.records || []);
             } else {
-                throw new Error(result.error || 'Failed to load students');
+                const error = await response.json();
+                this.showError(`Failed to load students: ${error.error.message}`);
             }
             
         } catch (error) {
@@ -644,15 +601,15 @@ class LearnWorldsIntegration {
                         <div>Last Updated</div>
                         <div>Actions</div>
                     </div>
-                    ${students.map(student => `
+                    ${students.map(record => `
                         <div class="table-row">
-                            <div>${student.name}</div>
-                            <div>${student.email}</div>
-                            <div>${this.formatCurrency(student.netWorth || 0)}</div>
-                            <div>${this.formatCurrency(student.monthlyCashFlow || 0)}</div>
-                            <div>${student.lastUpdated ? new Date(student.lastUpdated).toLocaleDateString() : 'Never'}</div>
+                            <div>${record.fields.Name || 'Unknown'}</div>
+                            <div>${record.fields.Email}</div>
+                            <div>${this.formatCurrency(record.fields['Net Worth'] || 0)}</div>
+                            <div>${this.formatCurrency(record.fields['Monthly Cash Flow'] || 0)}</div>
+                            <div>${record.fields['Last Updated'] ? new Date(record.fields['Last Updated']).toLocaleDateString() : 'Never'}</div>
                             <div>
-                                <button class="premium-btn tertiary" onclick="learnWorldsAuth.selectStudent('${student.email}', '${student.name}')">
+                                <button class="premium-btn tertiary" onclick="learnWorldsAuth.selectStudent('${record.fields.Email}', '${record.fields.Name || ''}')">
                                     <i class="fas fa-edit"></i>
                                 </button>
                             </div>
@@ -689,33 +646,13 @@ class LearnWorldsIntegration {
 
     saveUserSession() {
         localStorage.setItem('wealthFactory_currentUser', JSON.stringify(this.currentUser));
-        
-        // Also save to integrate with existing auth system
-        if (window.cloudStorage) {
-            window.cloudStorage.currentUser = this.currentUser;
-        }
     }
 
     async loadUserData() {
         if (!this.currentUser) return;
         
         try {
-            const response = await fetch(this.config.googleSheets.scriptUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'load',
-                    email: this.currentUser.email
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await window.airtableIntegration.loadUserData(this.currentUser.email);
             
             if (result.success && result.data) {
                 // Apply loaded data to the app
@@ -731,7 +668,7 @@ class LearnWorldsIntegration {
                         }
                     });
                     
-                    window.app.showNotification('Your data has been loaded from the cloud!', 'success');
+                    window.app.showNotification('Your data has been loaded from Airtable!', 'success');
                 }
             }
             
@@ -750,32 +687,16 @@ class LearnWorldsIntegration {
             const userData = {
                 email: this.currentUser.email,
                 name: this.currentUser.name,
-                timestamp: new Date().toISOString(),
                 data: financialData,
                 isCoach: this.currentUser.isCoach,
                 source: this.currentUser.source
             };
             
-            const response = await fetch(this.config.googleSheets.scriptUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'save',
-                    userData: userData
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
+            const result = await window.airtableIntegration.saveUserData(userData);
             
             if (result.success) {
                 if (window.app) {
-                    window.app.showNotification('Data saved to cloud successfully!', 'success');
+                    window.app.showNotification('Data saved to Airtable successfully!', 'success');
                 }
                 return { success: true };
             } else {
@@ -785,7 +706,7 @@ class LearnWorldsIntegration {
         } catch (error) {
             console.error('Save error:', error);
             if (window.app) {
-                window.app.showNotification('Failed to save to cloud. Data saved locally.', 'warning');
+                window.app.showNotification('Failed to save to Airtable. Data saved locally.', 'warning');
             }
             return { success: false, error: error.message };
         }
@@ -902,14 +823,14 @@ class LearnWorldsIntegration {
     // Setup auto-save integration
     setupAutoSave() {
         if (window.app) {
-            // Override the existing save method to include cloud save
+            // Override the existing save method to include Airtable save
             const originalSave = window.app.saveData.bind(window.app);
             
             window.app.saveData = () => {
                 // Save locally first
                 originalSave();
                 
-                // Then save to cloud if user is logged in
+                // Then save to Airtable if user is logged in
                 if (this.currentUser) {
                     const currentData = {
                         userData: window.app.data,
@@ -918,7 +839,7 @@ class LearnWorldsIntegration {
                     
                     // Don't await - let it save in background
                     this.saveUserData(currentData).catch(error => {
-                        console.error('Background cloud save failed:', error);
+                        console.error('Background Airtable save failed:', error);
                     });
                 }
             };
