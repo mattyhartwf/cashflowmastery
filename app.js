@@ -571,40 +571,46 @@ class CashFlowMastery {
     }
 
     async manualSave() {
-        this.showNotification('Saving data to cloud...', 'info');
+        this.showNotification('Saving to Airtable...', 'info');
         
         try {
-            // Check if cloudStorage or learnWorldsAuth is available
-            if (window.cloudStorage && window.cloudStorage.currentUser) {
-                const result = await window.cloudStorage.saveUserData({
-                    userData: this.data,
-                    customItems: this.customItems
-                });
+            // Check if user is logged in (from auth systems)
+            let currentUser = null;
+            
+            if (window.learnWorldsAuth && window.learnWorldsAuth.currentUser) {
+                currentUser = window.learnWorldsAuth.currentUser;
+            } else if (window.cloudStorage && window.cloudStorage.currentUser) {
+                currentUser = window.cloudStorage.currentUser;
+            }
+            
+            if (currentUser && window.airtableIntegration) {
+                // Save to Airtable with user info
+                const userData = {
+                    email: currentUser.email,
+                    name: currentUser.name,
+                    data: this.data,
+                    source: 'manual_save',
+                    isCoach: currentUser.isCoach || false
+                };
+                
+                const result = await window.airtableIntegration.saveUserData(userData);
                 
                 if (result.success) {
-                    this.showNotification('Data saved to cloud successfully!', 'success');
+                    this.showNotification('✅ Data saved to Airtable successfully!', 'success');
                 } else {
-                    throw new Error(result.error || 'Failed to save to cloud');
-                }
-            } else if (window.learnWorldsAuth && window.learnWorldsAuth.currentUser) {
-                const result = await window.learnWorldsAuth.saveUserData({
-                    userData: this.data,
-                    customItems: this.customItems
-                });
-                
-                if (result.success) {
-                    this.showNotification('Data saved to cloud successfully!', 'success');
-                } else {
-                    throw new Error(result.error || 'Failed to save to cloud');
+                    throw new Error(result.error);
                 }
             } else {
-                // No user logged in, just save locally
+                // No user logged in - save locally only
                 this.saveData();
                 this.showNotification('Data saved locally. Log in to save to cloud.', 'warning');
             }
+            
         } catch (error) {
-            console.error('Save error:', error);
-            this.showNotification('Failed to save to cloud. Data saved locally.', 'warning');
+            console.error('Airtable save failed:', error);
+            // Fallback to local save
+            this.saveData();
+            this.showNotification('Failed to save to Airtable. Data saved locally.', 'warning');
         }
     }
 
