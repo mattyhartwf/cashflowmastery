@@ -66,8 +66,8 @@ class CashFlowMastery {
             });
         });
 
-        // Save to Google Sheets
-        const saveBtn = document.getElementById('saveToSheets');
+        // Save to Airtable (updated to match HTML button ID)
+        const saveBtn = document.getElementById('saveToAirtable');
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
                 this.manualSave();
