@@ -122,6 +122,24 @@
             background: rgba(255, 255, 255, 0.15);
         }
         
+        /* Fix for main app input fields - make text visible */
+        .main-content .premium-input {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a1a1a;
+            border: 1px solid rgba(194, 155, 60, 0.3);
+        }
+        
+        .main-content .premium-input:focus {
+            background: white;
+            color: #1a1a1a;
+            border-color: #C29B3C;
+            box-shadow: 0 0 0 3px rgba(194, 155, 60, 0.2);
+        }
+        
+        .main-content .premium-input::placeholder {
+            color: #888;
+        }
+        
         .premium-input::placeholder {
             color: #888;
         }
@@ -1218,11 +1236,20 @@
     <script src="learnworlds-auth.js"></script>
     <script src="app.js"></script>
 
-    <!-- Emergency loading screen fix -->
+    <!-- Fixed initialization script -->
     <script>
-        // Emergency loading screen fix
+        // Global function to make selectStudent available
+        window.selectStudent = function(email, name) {
+            if (window.learnWorldsAuth) {
+                window.learnWorldsAuth.selectStudent(email, name);
+            }
+        };
+        
+        // Ensure proper initialization order
         document.addEventListener('DOMContentLoaded', function() {
-            // Force remove loading screen after 500ms
+            console.log('DOM loaded, initializing systems...');
+            
+            // Force remove loading screen
             setTimeout(function() {
                 const loadingScreen = document.getElementById('loading-screen');
                 const appContainer = document.getElementById('app');
@@ -1236,25 +1263,28 @@
                     appContainer.style.display = 'block';
                     appContainer.classList.add('animate-fade-in');
                 }
-                
-                console.log('Loading screen manually removed');
-            }, 500);
+            }, 1000);
+            
+            // Initialize authentication after a short delay to ensure all scripts are loaded
+            setTimeout(function() {
+                if (!window.learnWorldsAuth) {
+                    console.log('Initializing LearnWorlds auth...');
+                    window.learnWorldsAuth = new LearnWorldsIntegration();
+                }
+            }, 1500);
         });
 
-        // Backup - force remove after 2 seconds no matter what
+        // Emergency backup initialization
         setTimeout(function() {
-            const loadingScreen = document.getElementById('loading-screen');
-            const appContainer = document.getElementById('app');
-            
-            if (loadingScreen && loadingScreen.style.display !== 'none') {
-                loadingScreen.style.display = 'none';
-                console.log('Emergency loading screen removal');
+            if (!window.learnWorldsAuth) {
+                console.log('Emergency auth initialization...');
+                try {
+                    window.learnWorldsAuth = new LearnWorldsIntegration();
+                } catch (error) {
+                    console.error('Failed to initialize auth:', error);
+                }
             }
-            
-            if (appContainer) {
-                appContainer.style.display = 'block';
-            }
-        }, 2000);
+        }, 3000);
     </script>
 </body>
 </html>
