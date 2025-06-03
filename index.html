@@ -1,6 +1,67 @@
 // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Remove loading screen<!DOCTYPE html>
+            // Remove loading screen
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                const appContainer = document.getElementById('app');
+                
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+                
+                if (appContainer) {
+                    appContainer.style.display = 'block';
+                }
+            }, 1000);
+            
+            // Add event listeners
+            document.getElementById('saveToAirtable').addEventListener('click', saveData);
+            
+            // Add auto-save listeners to all financial inputs
+            document.querySelectorAll('[data-field]').forEach(input => {
+                input.addEventListener('input', scheduleAutoSave);
+                input.addEventListener('change', scheduleAutoSave);
+            });
+            
+            // Add listeners to email and name fields
+            document.getElementById('userEmail').addEventListener('input', scheduleAutoSave);
+            document.getElementById('userName').addEventListener('input', scheduleAutoSave);
+            
+            // Listen for when the main app is ready
+            const checkAppReady = setInterval(() => {
+                if (window.app && typeof window.app.calculateAll === 'function') {
+                    console.log('✅ Main app is ready');
+                    clearInterval(checkAppReady);
+                    
+                    // If we have data already loaded, trigger calculations
+                    const hasAnyData = document.querySelector('[data-field][value]:not([value=""])');
+                    if (hasAnyData) {
+                        console.log('📊 Triggering calculations for pre-loaded data');
+                        window.app.calculateAll();
+                        window.app.updateCharts();
+                    }
+                }
+            }, 100);
+            
+            // Clear the interval after 10 seconds to avoid infinite checking
+            setTimeout(() => clearInterval(checkAppReady), 10000);
+            
+            // Test connection on load
+            setTimeout(() => {
+                fetch(`${AIRTABLE_URL}?maxRecords=1`, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('✅ Airtable connection working');
+                    } else {
+                        console.error('❌ Airtable connection failed');
+                        showNotification('Warning: Could not connect to Airtable', 'warning');
+                    }
+                });
+            }, 2000);
+        });<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1125,36 +1186,27 @@
                 const input = document.querySelector(`[data-field="${field}"]`);
                 if (input) {
                     input.value = value;
-                    // Trigger change event to ensure calculations update
-                    input.dispatchEvent(new Event('input', { bubbles: true }));
-                    input.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
             
-            // Force recalculation after loading data - try multiple approaches
+            // Force recalculation after loading data - use your existing app system
             setTimeout(() => {
-                // Try calling app's calculation function
+                // Call the main app's calculation function
                 if (window.app && typeof window.app.calculateAll === 'function') {
                     window.app.calculateAll();
+                    window.app.updateCharts();
+                    console.log('✅ Calculations updated via app.calculateAll()');
+                } else {
+                    console.log('⚠️ App not ready, retrying calculations...');
+                    // Retry after app is fully loaded
+                    setTimeout(() => {
+                        if (window.app && typeof window.app.calculateAll === 'function') {
+                            window.app.calculateAll();
+                            window.app.updateCharts();
+                            console.log('✅ Calculations updated via app.calculateAll() (retry)');
+                        }
+                    }, 500);
                 }
-                
-                // Try calling global calculation functions
-                if (typeof window.calculateAll === 'function') {
-                    window.calculateAll();
-                }
-                
-                if (typeof window.updateCalculations === 'function') {
-                    window.updateCalculations();
-                }
-                
-                // Try calling calculation functions from calculations.js
-                if (typeof window.recalculateAll === 'function') {
-                    window.recalculateAll();
-                }
-                
-                // Dispatch custom event for calculations
-                document.dispatchEvent(new CustomEvent('dataLoaded'));
-                
             }, 200);
         }
         
