@@ -1,4 +1,4 @@
-/* === Wealth Factory - Utility Functions === */
+/* === Wealth Factory - Utility Functions - Clean Version === */
 
 // Currency formatting utilities
 const CurrencyUtils = {
@@ -119,58 +119,6 @@ const ValidationUtils = {
             return `${fieldName} must be between 0 and 100`;
         }
         return null;
-    }
-};
-
-// Local storage utilities with error handling
-const StorageUtils = {
-    set(key, value) {
-        try {
-            const serializedValue = JSON.stringify(value);
-            localStorage.setItem(key, serializedValue);
-            return true;
-        } catch (error) {
-            console.warn(`Failed to save to localStorage: ${error.message}`);
-            return false;
-        }
-    },
-
-    get(key, defaultValue = null) {
-        try {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : defaultValue;
-        } catch (error) {
-            console.warn(`Failed to read from localStorage: ${error.message}`);
-            return defaultValue;
-        }
-    },
-
-    remove(key) {
-        try {
-            localStorage.removeItem(key);
-            return true;
-        } catch (error) {
-            console.warn(`Failed to remove from localStorage: ${error.message}`);
-            return false;
-        }
-    },
-
-    clear() {
-        try {
-            localStorage.clear();
-            return true;
-        } catch (error) {
-            console.warn(`Failed to clear localStorage: ${error.message}`);
-            return false;
-        }
-    },
-
-    exists(key) {
-        return localStorage.getItem(key) !== null;
-    },
-
-    size() {
-        return localStorage.length;
     }
 };
 
@@ -578,11 +526,87 @@ const PerformanceUtils = {
     }
 };
 
+// Financial calculation utilities
+const FinancialUtils = {
+    calculateNetWorth(assets, liabilities) {
+        const totalAssets = Object.values(assets).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+        const totalLiabilities = Object.values(liabilities).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+        return totalAssets - totalLiabilities;
+    },
+
+    calculateCashFlow(income, expenses) {
+        const totalIncome = Object.values(income).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+        const totalExpenses = Object.values(expenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+        return totalIncome - totalExpenses;
+    },
+
+    calculateDebtToIncomeRatio(totalDebt, monthlyIncome) {
+        return monthlyIncome > 0 ? (totalDebt / (monthlyIncome * 12)) * 100 : 0;
+    },
+
+    calculateSavingsRate(monthlyIncome, monthlyExpenses) {
+        const monthlySavings = monthlyIncome - monthlyExpenses;
+        return monthlyIncome > 0 ? (monthlySavings / monthlyIncome) * 100 : 0;
+    },
+
+    calculateEmergencyFundMonths(liquidAssets, monthlyExpenses) {
+        return monthlyExpenses > 0 ? liquidAssets / monthlyExpenses : 0;
+    },
+
+    calculateCompoundGrowth(principal, annualRate, years, monthlyContribution = 0) {
+        let balance = principal;
+        const monthlyRate = annualRate / 12;
+        const months = years * 12;
+        
+        for (let i = 0; i < months; i++) {
+            balance = balance * (1 + monthlyRate) + monthlyContribution;
+        }
+        
+        return balance;
+    }
+};
+
+// Data formatting utilities
+const FormatUtils = {
+    formatPercentage(value, decimals = 1) {
+        return `${value.toFixed(decimals)}%`;
+    },
+
+    formatLargeNumber(value) {
+        if (Math.abs(value) >= 1e9) {
+            return (value / 1e9).toFixed(1) + 'B';
+        } else if (Math.abs(value) >= 1e6) {
+            return (value / 1e6).toFixed(1) + 'M';
+        } else if (Math.abs(value) >= 1e3) {
+            return (value / 1e3).toFixed(1) + 'K';
+        }
+        return value.toString();
+    },
+
+    formatTimeRemaining(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        if (hours > 0) {
+            return `${hours}h ${minutes}m ${secs}s`;
+        } else if (minutes > 0) {
+            return `${minutes}m ${secs}s`;
+        } else {
+            return `${secs}s`;
+        }
+    },
+
+    truncateText(text, maxLength, suffix = '...') {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength - suffix.length) + suffix;
+    }
+};
+
 // Export utilities for use in other modules
 window.CurrencyUtils = CurrencyUtils;
 window.DateUtils = DateUtils;
 window.ValidationUtils = ValidationUtils;
-window.StorageUtils = StorageUtils;
 window.DOMUtils = DOMUtils;
 window.MathUtils = MathUtils;
 window.AnimationUtils = AnimationUtils;
@@ -590,3 +614,5 @@ window.ColorUtils = ColorUtils;
 window.EventUtils = EventUtils;
 window.DeviceUtils = DeviceUtils;
 window.PerformanceUtils = PerformanceUtils;
+window.FinancialUtils = FinancialUtils;
+window.FormatUtils = FormatUtils;
