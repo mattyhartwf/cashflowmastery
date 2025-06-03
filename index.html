@@ -22,7 +22,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     
     <style>
-        /* Premium Loading Screen with Cool Black, Gold, Silver Theme */
+        /* Premium Loading Screen */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -54,8 +54,7 @@
             right: 0;
             bottom: 0;
             background: radial-gradient(circle at 30% 70%, rgba(196, 171, 60, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 30%, rgba(192, 192, 192, 0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 50% 50%, rgba(0, 35, 64, 0.3) 0%, transparent 70%);
+                        radial-gradient(circle at 70% 30%, rgba(192, 192, 192, 0.08) 0%, transparent 50%);
             animation: shimmer 6s ease-in-out infinite;
         }
 
@@ -81,14 +80,8 @@
         }
 
         @keyframes logoFadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) translateY(30px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+            from { opacity: 0; transform: scale(0.8) translateY(30px); }
         }
 
         .logo-icon {
@@ -99,7 +92,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: iconPulse 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px rgba(196, 171, 60, 0.4)) drop-shadow(0 0 10px rgba(0, 35, 64, 0.3));
+            filter: drop-shadow(0 0 30px rgba(196, 171, 60, 0.4));
         }
 
         @keyframes iconPulse {
@@ -113,23 +106,12 @@
             font-size: 2.5rem;
             letter-spacing: 4px;
             font-family: 'Lato', sans-serif;
-            text-shadow: 0 0 20px rgba(196, 171, 60, 0.5),
-                         0 4px 8px rgba(0, 35, 64, 0.4);
+            text-shadow: 0 0 20px rgba(196, 171, 60, 0.5);
             margin-bottom: 0.5rem;
             background: linear-gradient(135deg, #C4AB3C 0%, #D4A853 50%, #C0C0C0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: textGlow 4s ease-in-out infinite;
-        }
-
-        @keyframes textGlow {
-            0%, 100% {
-                filter: drop-shadow(0 0 10px rgba(196, 171, 60, 0.3));
-            }
-            50% {
-                filter: drop-shadow(0 0 20px rgba(196, 171, 60, 0.6));
-            }
         }
 
         .wealth-subtitle {
@@ -182,64 +164,6 @@
 
         @keyframes textFadeIn {
             to { opacity: 0.9; }
-        }
-
-        .loading-dots {
-            display: inline-block;
-            animation: dots 2s infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
-        }
-
-        /* Particles Effect */
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .particle {
-            position: absolute;
-            background: linear-gradient(45deg, #C4AB3C, #C0C0C0);
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: float 15s infinite linear;
-        }
-
-        .particle:nth-child(odd) {
-            background: linear-gradient(45deg, #C4AB3C, #D4A853);
-            animation-duration: 20s;
-        }
-
-        .particle:nth-child(even) {
-            background: linear-gradient(45deg, #002340, #C0C0C0);
-            animation-duration: 25s;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
         }
 
         /* App Container */
@@ -422,19 +346,6 @@
 <body>
     <!-- Premium Loading Screen -->
     <div id="loading-screen" class="loading-screen">
-        <!-- Floating Particles -->
-        <div class="particles">
-            <div class="particle" style="left: 10%; width: 3px; height: 3px; animation-delay: 0s;"></div>
-            <div class="particle" style="left: 20%; width: 2px; height: 2px; animation-delay: 2s;"></div>
-            <div class="particle" style="left: 30%; width: 4px; height: 4px; animation-delay: 4s;"></div>
-            <div class="particle" style="left: 40%; width: 2px; height: 2px; animation-delay: 6s;"></div>
-            <div class="particle" style="left: 50%; width: 3px; height: 3px; animation-delay: 1s;"></div>
-            <div class="particle" style="left: 60%; width: 2px; height: 2px; animation-delay: 3s;"></div>
-            <div class="particle" style="left: 70%; width: 4px; height: 4px; animation-delay: 5s;"></div>
-            <div class="particle" style="left: 80%; width: 2px; height: 2px; animation-delay: 7s;"></div>
-            <div class="particle" style="left: 90%; width: 3px; height: 3px; animation-delay: 2s;"></div>
-        </div>
-
         <div class="loader">
             <div class="wealth-logo-loader">
                 <div class="logo-icon">💰</div>
@@ -444,7 +355,7 @@
             <div class="loading-bar">
                 <div class="loading-progress"></div>
             </div>
-            <p class="loading-text">Loading your financial dashboard<span class="loading-dots"></span></p>
+            <p class="loading-text">Loading your financial dashboard...</p>
         </div>
     </div>
 
@@ -1290,21 +1201,16 @@
 
     <!-- Scripts -->
     <script src="utils.js"></script>
-    <script src="storage.js"></script>
-    <script src="calculations.js"></script>
     <script src="charts.js"></script>
     <script src="airtable-integration.js"></script>
     <script src="app.js"></script>
 
-    <!-- Clean JavaScript - No Problematic Code -->
+    <!-- Clean JavaScript for Email Integration -->
     <script>
-        // Simple Airtable Integration
-        const AIRTABLE_BASE_ID = 'appBJSpCa8ue7cqiA';
-        const AIRTABLE_API_KEY = 'patm8ZuPbmf2JVGX6.9b1907acddb8cea5400ae18009490f5cc6d6f087433ad394cf9bbad2a731e268';
-        const AIRTABLE_TABLE = 'Students';
-        const AIRTABLE_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE}`;
+        // Global variables for current user
+        let currentUser = null;
         
-        // Show notification
+        // Show notification function
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -1318,7 +1224,7 @@
             }, 4000);
         }
         
-        // Show status message
+        // Show status message function
         function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.className = `status-message status-${type}`;
@@ -1344,4 +1250,176 @@
         // Set form data
         function setFormData(data) {
             Object.entries(data).forEach(([field, value]) => {
-                const input = document.querySelector(`[data
+                const input = document.querySelector(`[data-field="${field}"]`);
+                if (input) {
+                    input.value = value || '';
+                }
+            });
+            
+            // Trigger calculations
+            if (window.app) {
+                window.app.data = { ...window.app.data, ...data };
+                window.app.calculateAll();
+                window.app.updateCharts();
+            }
+        }
+        
+        // Load data function
+        async function loadData() {
+            const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            if (!email) {
+                showStatus('Please enter your email address', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showStatus('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            currentUser = { email, name: name || email.split('@')[0] };
+            showStatus('Loading your data...', 'info');
+            
+            try {
+                const result = await window.airtableIntegration.loadUserData(email);
+                
+                if (result.success && result.data) {
+                    setFormData(result.data.data);
+                    showCurrentUser();
+                    showStatus(`Welcome back, ${result.data.name}! Data loaded successfully.`, 'success');
+                    showNotification('Your financial data has been loaded!', 'success');
+                } else {
+                    showCurrentUser();
+                    showStatus(`Ready for ${currentUser.name}. No previous data found - start entering your information.`, 'warning');
+                    showNotification('No existing data found. Ready to start fresh!', 'info');
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                showStatus('Failed to load data. Please try again.', 'error');
+            }
+        }
+        
+        // Save data function
+        async function saveData() {
+            const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            if (!email) {
+                showStatus('Please enter your email address', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showStatus('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            const { data, hasData } = getCurrentData();
+            
+            if (!hasData) {
+                showStatus('No data to save. Please enter some financial information first.', 'warning');
+                return;
+            }
+            
+            currentUser = { email, name: name || email.split('@')[0] };
+            showStatus('Saving your data...', 'info');
+            
+            try {
+                const userData = {
+                    email: currentUser.email,
+                    name: currentUser.name,
+                    data: data,
+                    source: 'web_app'
+                };
+                
+                const result = await window.airtableIntegration.saveUserData(userData);
+                
+                if (result.success) {
+                    showCurrentUser();
+                    showStatus(`Data saved successfully for ${currentUser.name}!`, 'success');
+                    showNotification('Your financial data has been saved to the cloud!', 'success');
+                } else {
+                    throw new Error(result.error || 'Save failed');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showStatus('Failed to save data. Please try again.', 'error');
+                showNotification('Save failed. Please check your connection and try again.', 'error');
+            }
+        }
+        
+        // Show current user
+        function showCurrentUser() {
+            if (currentUser) {
+                const statusDiv = document.getElementById('statusMessage');
+                statusDiv.className = 'current-user';
+                statusDiv.innerHTML = `
+                    <i class="fas fa-user-check"></i>
+                    Logged in as <strong>${currentUser.name}</strong> (${currentUser.email})
+                    <button onclick="logout()" style="margin-left: 10px; padding: 4px 8px; background: #EF4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Logout
+                    </button>
+                `;
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            currentUser = null;
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userName').value = '';
+            document.getElementById('statusMessage').innerHTML = '';
+            
+            // Clear form data
+            document.querySelectorAll('[data-field]').forEach(input => {
+                input.value = '';
+            });
+            
+            // Reset calculations
+            if (window.app) {
+                window.app.data = {};
+                window.app.calculateAll();
+                window.app.updateCharts();
+            }
+            
+            showNotification('Logged out successfully', 'info');
+        }
+        
+        // Email validation
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Auto-save functionality
+        function setupAutoSave() {
+            let autoSaveTimeout;
+            
+            document.querySelectorAll('[data-field]').forEach(input => {
+                input.addEventListener('input', () => {
+                    if (currentUser) {
+                        clearTimeout(autoSaveTimeout);
+                        autoSaveTimeout = setTimeout(() => {
+                            saveData();
+                        }, 30000); // Auto-save after 30 seconds of inactivity
+                    }
+                });
+            });
+        }
+        
+        // Initialize auto-save when app loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(setupAutoSave, 2000);
+        });
+        
+        // Add custom item function (global for onclick handlers)
+        function addCustomItem(category) {
+            if (window.app) {
+                window.app.addCustomItem(category);
+            }
+        }
+    </script>
+</body>
+</html>
