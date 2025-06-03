@@ -21,389 +21,156 @@
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     
-    <!-- Add these styles for the login modal -->
     <style>
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-        
-        .modal-overlay.show .modal {
-            transform: scale(1);
-        }
-        
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .wealth-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 1rem;
-            color: #C29B3C;
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-        
-        .login-header h3 {
-            color: white;
-            margin: 0 0 0.5rem 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .login-header p {
-            color: #a0a0a0;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            color: white;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .premium-input {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-        
-        .premium-input:focus {
-            outline: none;
-            border-color: #C29B3C;
-            box-shadow: 0 0 0 3px rgba(194, 155, 60, 0.2);
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        /* Fix for main app input fields - make text visible */
-        .main-content .premium-input {
-            background: rgba(255, 255, 255, 0.95);
-            color: #1a1a1a;
-            border: 1px solid rgba(194, 155, 60, 0.3);
-        }
-        
-        .main-content .premium-input:focus {
-            background: white;
-            color: #1a1a1a;
-            border-color: #C29B3C;
-            box-shadow: 0 0 0 3px rgba(194, 155, 60, 0.2);
-        }
-        
-        .main-content .premium-input::placeholder {
-            color: #888;
-        }
-        
-        .premium-input::placeholder {
-            color: #888;
-        }
-        
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: white;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        
-        .checkbox-label input[type="checkbox"] {
-            margin: 0;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: space-between;
-            margin-top: 2rem;
-        }
-        
-        .premium-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            justify-content: center;
-        }
-        
-        .premium-btn.primary {
-            background: linear-gradient(135deg, #C29B3C 0%, #D4A853 100%);
-            color: white;
-        }
-        
-        .premium-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(194, 155, 60, 0.3);
-        }
-        
-        .premium-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .premium-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-        
-        .login-info {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .login-info p {
-            color: #a0a0a0;
-            font-size: 0.8rem;
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .login-info i {
-            color: #C29B3C;
-            width: 16px;
-        }
-        
-        .login-error {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #EF4444;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10001;
-        }
-        
-        .loading-content {
-            text-align: center;
-            color: white;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(194, 155, 60, 0.3);
-            border-top: 4px solid #C29B3C;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .coach-panel {
+        /* Simple Email Form Styles */
+        .email-section {
             background: linear-gradient(135deg, rgba(194, 155, 60, 0.1) 0%, rgba(212, 168, 83, 0.05) 100%);
             border: 1px solid rgba(194, 155, 60, 0.2);
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 2rem;
+            text-align: center;
         }
         
-        .coach-header h3 {
+        .email-section h3 {
             color: #C29B3C;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .email-form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        
+        .email-input {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a1a1a;
+            border: 1px solid rgba(194, 155, 60, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            min-width: 250px;
+        }
+        
+        .email-input:focus {
+            outline: none;
+            border-color: #C29B3C;
+            box-shadow: 0 0 0 3px rgba(194, 155, 60, 0.2);
+        }
+        
+        .email-btn {
+            background: linear-gradient(135deg, #C29B3C 0%, #D4A853 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .coach-header p {
-            color: #a0a0a0;
-            margin: 0;
+        .email-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(194, 155, 60, 0.3);
         }
         
-        .coach-button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 1rem;
+        .email-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
         
-        .current-student {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .student-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        
-        .student-details h4 {
-            color: white;
-            margin: 0 0 0.5rem 0;
-        }
-        
-        .student-details p {
-            color: #a0a0a0;
-            margin: 0.25rem 0;
-            font-size: 0.9rem;
-        }
-        
-        .student-stats {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-label {
-            display: block;
-            color: #a0a0a0;
-            font-size: 0.8rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .stat-value {
-            display: block;
-            color: #C29B3C;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .user-info-display {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.1);
+        .current-user {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 8px;
-            margin-right: 12px;
-        }
-        
-        .user-avatar {
-            position: relative;
-            color: #C29B3C;
-            font-size: 1.5rem;
-        }
-        
-        .coach-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            font-size: 0.7rem;
-            color: #D4A853;
-        }
-        
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .user-name {
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .user-email {
-            color: #a0a0a0;
-            font-size: 0.8rem;
-        }
-        
-        .user-role {
-            color: #C29B3C;
-            font-size: 0.7rem;
+            padding: 12px 16px;
+            margin-top: 1rem;
+            color: #10B981;
             font-weight: 600;
         }
         
-        .premium-btn.tertiary {
-            background: transparent;
-            color: #a0a0a0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px;
-            min-width: auto;
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 600;
         }
         
-        .premium-btn.tertiary:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
+        .status-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10B981;
         }
+        
+        .status-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #EF4444;
+        }
+        
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #F59E0B;
+        }
+        
+        /* Fix input fields in main form */
+        .main-content .premium-input,
+        .financial-item .premium-input {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #1a1a1a !important;
+            border: 1px solid rgba(194, 155, 60, 0.3);
+        }
+        
+        .main-content .premium-input:focus,
+        .financial-item .premium-input:focus {
+            background: white !important;
+            color: #1a1a1a !important;
+            border-color: #C29B3C;
+            box-shadow: 0 0 0 3px rgba(194, 155, 60, 0.2);
+        }
+        
+        .main-content .premium-input::placeholder,
+        .financial-item .premium-input::placeholder {
+            color: #888;
+        }
+        
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success { background: #10B981; }
+        .notification.error { background: #EF4444; }
+        .notification.warning { background: #F59E0B; }
+        .notification.info { background: #3B82F6; }
     </style>
 </head>
 <body>
@@ -433,7 +200,7 @@
                     </div>
                 </div>
                 <div class="nav-actions">
-                    <button id="saveToSheets" class="premium-btn primary">
+                    <button id="saveToAirtable" class="premium-btn primary">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span>Save to Cloud</span>
                     </button>
@@ -447,6 +214,35 @@
                 </div>
             </div>
         </nav>
+
+        <!-- Email Section for Save/Load -->
+        <div class="email-section">
+            <h3>
+                <i class="fas fa-envelope"></i>
+                Save & Load Your Data
+            </h3>
+            <p>Enter your email to save your financial data to the cloud or load previously saved data.</p>
+            
+            <div class="email-form">
+                <input 
+                    type="email" 
+                    id="userEmail" 
+                    class="email-input" 
+                    placeholder="Enter your email address"
+                    required
+                >
+                <button onclick="loadData()" class="email-btn">
+                    <i class="fas fa-download"></i>
+                    Load Data
+                </button>
+                <button onclick="saveData()" class="email-btn">
+                    <i class="fas fa-save"></i>
+                    Save Data
+                </button>
+            </div>
+            
+            <div id="statusMessage"></div>
+        </div>
 
         <!-- Hero Section -->
         <section class="hero-section">
@@ -501,12 +297,12 @@
                 </div>
             </div>
 
-            <!-- Income Statement Tab (First) -->
+            <!-- Income Statement Tab -->
             <div id="income-statement" class="tab-content active">
                 <div class="content-grid income-grid-new">
                     <!-- Income and Expenses Container -->
                     <div class="income-expenses-container">
-                        <!-- Income Section (Top Half) -->
+                        <!-- Income Section -->
                         <div class="financial-section income-section-top">
                             <div class="section-header">
                                 <h2 class="section-title">
@@ -597,14 +393,14 @@
                             </div>
                         </div>
 
-                        <!-- Divider Line -->
+                        <!-- Divider -->
                         <div class="section-divider">
                             <div class="divider-line"></div>
                             <div class="divider-text">Monthly Expenses</div>
                             <div class="divider-line"></div>
                         </div>
 
-                        <!-- Expenses Section (Bottom Half) -->
+                        <!-- Expenses Section -->
                         <div class="financial-section expenses-section-bottom">
                             <div class="section-header">
                                 <h2 class="section-title">
@@ -794,7 +590,7 @@
                         </div>
                     </div>
 
-                    <!-- Cash Flow Summary (Right Sidebar) -->
+                    <!-- Cash Flow Summary -->
                     <div class="financial-section cashflow-section-sidebar">
                         <div class="section-header">
                             <h2 class="section-title">
@@ -864,7 +660,7 @@
                 <div class="content-grid balance-grid-new">
                     <!-- Assets and Liabilities Container -->
                     <div class="assets-liabilities-container">
-                        <!-- Assets Section (Top Half) -->
+                        <!-- Assets Section -->
                         <div class="financial-section assets-section-top">
                             <div class="section-header">
                                 <h2 class="section-title">
@@ -995,14 +791,14 @@
                             </div>
                         </div>
 
-                        <!-- Divider Line -->
+                        <!-- Divider -->
                         <div class="section-divider">
                             <div class="divider-line"></div>
                             <div class="divider-text">Liabilities</div>
                             <div class="divider-line"></div>
                         </div>
 
-                        <!-- Liabilities Section (Bottom Half) -->
+                        <!-- Liabilities Section -->
                         <div class="financial-section liabilities-section-bottom">
                             <div class="section-header">
                                 <h2 class="section-title">
@@ -1096,7 +892,7 @@
                         </div>
                     </div>
 
-                    <!-- Net Worth Summary (Right Sidebar) -->
+                    <!-- Net Worth Summary -->
                     <div class="financial-section summary-section-sidebar">
                         <div class="section-header">
                             <h2 class="section-title">
@@ -1232,59 +1028,281 @@
     <script src="calculations.js"></script>
     <script src="charts.js"></script>
     <script src="airtable-integration.js"></script>
-    <script src="auth-storage.js"></script>
-    <script src="learnworlds-auth.js"></script>
     <script src="app.js"></script>
 
-    <!-- Fixed initialization script -->
+    <!-- Simple Save/Load Functions -->
     <script>
-        // Global function to make selectStudent available
-        window.selectStudent = function(email, name) {
-            if (window.learnWorldsAuth) {
-                window.learnWorldsAuth.selectStudent(email, name);
-            }
-        };
+        // Simple Airtable Integration
+        const AIRTABLE_BASE_ID = 'appBJSpCa8ue7cqiA';
+        const AIRTABLE_API_KEY = 'patm8ZuPbmf2JVGX6.9b1907acddb8cea5400ae18009490f5cc6d6f087433ad394cf9bbad2a731e268';
+        const AIRTABLE_TABLE = 'Students';
+        const AIRTABLE_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE}`;
         
-        // Ensure proper initialization order
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing systems...');
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
             
-            // Force remove loading screen
-            setTimeout(function() {
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+        
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.textContent = message;
+        }
+        
+        // Get current form data
+        function getCurrentData() {
+            const data = {};
+            document.querySelectorAll('[data-field]').forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                if (value !== 0) {
+                    data[input.dataset.field] = value;
+                }
+            });
+            return data;
+        }
+        
+        // Set form data
+        function setFormData(data) {
+            Object.entries(data).forEach(([field, value]) => {
+                const input = document.querySelector(`[data-field="${field}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            });
+            
+            // Trigger calculations if app is loaded
+            if (window.app) {
+                window.app.calculateAll();
+            }
+        }
+        
+        // Save data to Airtable
+        async function saveData() {
+            const email = document.getElementById('userEmail').value.trim();
+            
+            if (!email) {
+                showNotification('Please enter your email address', 'error');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            const currentData = getCurrentData();
+            
+            if (Object.keys(currentData).length === 0) {
+                showNotification('No data to save. Please fill out some fields first.', 'warning');
+                return;
+            }
+            
+            showStatus('Saving data to Airtable...', 'info');
+            
+            try {
+                // First, check if user exists
+                const searchUrl = `${AIRTABLE_URL}?filterByFormula={Email}='${email}'`;
+                
+                const searchResponse = await fetch(searchUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!searchResponse.ok) {
+                    throw new Error(`Search failed: ${searchResponse.status}`);
+                }
+                
+                const searchData = await searchResponse.json();
+                
+                const record = {
+                    fields: {
+                        'Email': email,
+                        'Name': email.split('@')[0],
+                        'Last Updated': new Date().toISOString(),
+                        'Financial Data': JSON.stringify(currentData),
+                        'Net Worth': calculateNetWorth(currentData),
+                        'Monthly Cash Flow': calculateMonthlyCashFlow(currentData),
+                        'Source': 'simple_app'
+                    }
+                };
+                
+                let response;
+                if (searchData.records.length > 0) {
+                    // Update existing record
+                    const recordId = searchData.records[0].id;
+                    response = await fetch(`${AIRTABLE_URL}/${recordId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(record)
+                    });
+                } else {
+                    // Create new record
+                    response = await fetch(AIRTABLE_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ records: [record] })
+                    });
+                }
+                
+                if (response.ok) {
+                    showStatus('✅ Data saved successfully!', 'success');
+                    showNotification('Data saved to Airtable successfully!', 'success');
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'Save failed');
+                }
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                showStatus(`❌ Save failed: ${error.message}`, 'error');
+                showNotification('Failed to save data. Please try again.', 'error');
+            }
+        }
+        
+        // Load data from Airtable
+        async function loadData() {
+            const email = document.getElementById('userEmail').value.trim();
+            
+            if (!email) {
+                showNotification('Please enter your email address', 'error');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            showStatus('Loading data from Airtable...', 'info');
+            
+            try {
+                const searchUrl = `${AIRTABLE_URL}?filterByFormula={Email}='${email}'`;
+                
+                const response = await fetch(searchUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Load failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.records.length > 0) {
+                    const record = data.records[0];
+                    const financialData = JSON.parse(record.fields['Financial Data'] || '{}');
+                    
+                    setFormData(financialData);
+                    
+                    const lastUpdated = new Date(record.fields['Last Updated']).toLocaleDateString();
+                    showStatus(`✅ Data loaded successfully! Last updated: ${lastUpdated}`, 'success');
+                    showNotification('Data loaded from Airtable!', 'success');
+                } else {
+                    showStatus('No saved data found for this email address.', 'warning');
+                    showNotification('No saved data found for this email.', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Load error:', error);
+                showStatus(`❌ Load failed: ${error.message}`, 'error');
+                showNotification('Failed to load data. Please try again.', 'error');
+            }
+        }
+        
+        // Simple calculations
+        function calculateNetWorth(data) {
+            const assets = calculateTotal(data, [
+                'cash_on_hand', 'personal_checking', 'personal_savings', 'business_checking', 'business_savings',
+                'money_market', 'certificates_deposit', 'business_1', 'business_2', 'business_3',
+                'stocks', 'bonds', 'mutual_funds', 'ira', '401k', 'primary_residence', 'auto_1', 'auto_2', 'other_personal_assets'
+            ]);
+            
+            const liabilities = calculateTotal(data, [
+                'medical_dental', 'credit_card_1', 'credit_card_2', 'credit_card_3', 'credit_card_4', 'credit_card_5',
+                'primary_mortgage', 'heloc', 'investment_mortgage', 'auto_loan_1', 'auto_loan_2', 'student_loans', 'personal_loans_balance'
+            ]);
+            
+            return assets - liabilities;
+        }
+        
+        function calculateMonthlyCashFlow(data) {
+            const income = calculateTotal(data, [
+                'salary_wages', 'distributions', 'commissions', 'bonus', 'interest_income',
+                'dividends', 'royalties', 'business_income', 'real_estate_income'
+            ]);
+            
+            const expenses = calculateTotal(data, [
+                'mortgage_rent', 'heloc_payment', 'hoa_fees', 'cell_phone_1', 'cell_phone_2',
+                'internet', 'cable_satellite', 'home_security', 'home_insurance', 'electricity', 'gas',
+                'water_sewer', 'waste_removal', 'repairs_maintenance', 'lawncare_pest',
+                'auto_payment_1', 'auto_payment_2', 'auto_insurance', 'registration_tags', 'gas_fuel', 'auto_repairs',
+                'groceries', 'restaurants', 'streaming', 'music', 'movies', 'concerts', 'sporting_events',
+                'live_theater', 'outdoor_activities'
+            ]);
+            
+            return income - expenses;
+        }
+        
+        function calculateTotal(data, fields) {
+            return fields.reduce((sum, field) => sum + (data[field] || 0), 0);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove loading screen
+            setTimeout(() => {
                 const loadingScreen = document.getElementById('loading-screen');
                 const appContainer = document.getElementById('app');
                 
                 if (loadingScreen) {
                     loadingScreen.style.display = 'none';
-                    loadingScreen.classList.add('hidden');
                 }
                 
                 if (appContainer) {
                     appContainer.style.display = 'block';
-                    appContainer.classList.add('animate-fade-in');
                 }
             }, 1000);
             
-            // Initialize authentication after a short delay to ensure all scripts are loaded
-            setTimeout(function() {
-                if (!window.learnWorldsAuth) {
-                    console.log('Initializing LearnWorlds auth...');
-                    window.learnWorldsAuth = new LearnWorldsIntegration();
-                }
-            }, 1500);
+            // Add event listeners
+            document.getElementById('saveToAirtable').addEventListener('click', saveData);
+            
+            // Test connection on load
+            setTimeout(() => {
+                fetch(`${AIRTABLE_URL}?maxRecords=1`, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('✅ Airtable connection working');
+                    } else {
+                        console.error('❌ Airtable connection failed');
+                        showNotification('Warning: Could not connect to Airtable', 'warning');
+                    }
+                });
+            }, 2000);
         });
-
-        // Emergency backup initialization
-        setTimeout(function() {
-            if (!window.learnWorldsAuth) {
-                console.log('Emergency auth initialization...');
-                try {
-                    window.learnWorldsAuth = new LearnWorldsIntegration();
-                } catch (error) {
-                    console.error('Failed to initialize auth:', error);
-                }
-            }
-        }, 3000);
     </script>
 </body>
 </html>
