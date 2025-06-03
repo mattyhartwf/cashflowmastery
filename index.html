@@ -231,6 +231,13 @@
                     placeholder="Enter your email address"
                     required
                 >
+                <input 
+                    type="text" 
+                    id="userName" 
+                    class="email-input" 
+                    placeholder="Enter your full name"
+                    style="min-width: 200px;"
+                >
                 <button onclick="loadData()" class="email-btn">
                     <i class="fas fa-download"></i>
                     Load Data
@@ -1062,13 +1069,17 @@
         // Get current form data
         function getCurrentData() {
             const data = {};
+            let hasData = false;
+            
             document.querySelectorAll('[data-field]').forEach(input => {
                 const value = parseFloat(input.value) || 0;
                 if (value !== 0) {
                     data[input.dataset.field] = value;
+                    hasData = true;
                 }
             });
-            return data;
+            
+            return { data, hasData };
         }
         
         // Set form data
@@ -1086,24 +1097,119 @@
             }
         }
         
+        // Auto-save function (debounced)
+        let autoSaveTimeout;
+        function scheduleAutoSave() {
+            const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            // Only auto-save if we have email and name
+            if (!email || !name) return;
+            
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                autoSaveData();
+            }, 3000); // Wait 3 seconds after user stops typing
+        }
+        
+        // Auto-save data quietly
+        async function autoSaveData() {
+            const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            if (!email || !name) return;
+            
+            const { data: currentData, hasData } = getCurrentData();
+            
+            try {
+                // Save even if form is empty (just email/name)
+                const searchUrl = `${AIRTABLE_URL}?filterByFormula={Email}='${email}'`;
+                
+                const searchResponse = await fetch(searchUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!searchResponse.ok) return;
+                
+                const searchData = await searchResponse.json();
+                
+                const record = {
+                    fields: {
+                        'Email': email,
+                        'Name': name,
+                        'Last Updated': new Date().toISOString(),
+                        'Financial Data': JSON.stringify(currentData),
+                        'Net Worth': calculateNetWorth(currentData),
+                        'Monthly Cash Flow': calculateMonthlyCashFlow(currentData),
+                        'Source': 'simple_app_autosave'
+                    }
+                };
+                
+                let response;
+                if (searchData.records.length > 0) {
+                    // Update existing record
+                    const recordId = searchData.records[0].id;
+                    response = await fetch(`${AIRTABLE_URL}/${recordId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(record)
+                    });
+                } else {
+                    // Create new record
+                    response = await fetch(AIRTABLE_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ records: [record] })
+                    });
+                }
+                
+                if (response.ok && hasData) {
+                    // Only show notification if there's actual financial data
+                    showNotification('💾 Auto-saved!', 'success');
+                }
+                
+            } catch (error) {
+                console.error('Auto-save error:', error);
+            }
+        }
+        
         // Save data to Airtable
         async function saveData() {
             const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
             
             if (!email) {
                 showNotification('Please enter your email address', 'error');
+                showStatus('❌ Please enter your email address', 'error');
                 return;
             }
             
             if (!email.includes('@')) {
                 showNotification('Please enter a valid email address', 'error');
+                showStatus('❌ Please enter a valid email address', 'error');
                 return;
             }
             
-            const currentData = getCurrentData();
+            if (!name) {
+                showNotification('Please enter your full name', 'error');
+                showStatus('❌ Please enter your full name', 'error');
+                return;
+            }
             
-            if (Object.keys(currentData).length === 0) {
-                showNotification('No data to save. Please fill out some fields first.', 'warning');
+            const { data: currentData, hasData } = getCurrentData();
+            
+            if (!hasData) {
+                showNotification('Please fill out some financial information first, then save your data', 'warning');
+                showStatus('💡 Fill out some financial fields below, then click Save Data', 'warning');
                 return;
             }
             
@@ -1129,7 +1235,7 @@
                 const record = {
                     fields: {
                         'Email': email,
-                        'Name': email.split('@')[0],
+                        'Name': name,
                         'Last Updated': new Date().toISOString(),
                         'Financial Data': JSON.stringify(currentData),
                         'Net Worth': calculateNetWorth(currentData),
@@ -1213,6 +1319,9 @@
                     const record = data.records[0];
                     const financialData = JSON.parse(record.fields['Financial Data'] || '{}');
                     
+                    // Load the name too
+                    document.getElementById('userName').value = record.fields['Name'] || '';
+                    
                     setFormData(financialData);
                     
                     const lastUpdated = new Date(record.fields['Last Updated']).toLocaleDateString();
@@ -1286,6 +1395,16 @@
             
             // Add event listeners
             document.getElementById('saveToAirtable').addEventListener('click', saveData);
+            
+            // Add auto-save listeners to all financial inputs
+            document.querySelectorAll('[data-field]').forEach(input => {
+                input.addEventListener('input', scheduleAutoSave);
+                input.addEventListener('change', scheduleAutoSave);
+            });
+            
+            // Add listeners to email and name fields
+            document.getElementById('userEmail').addEventListener('input', scheduleAutoSave);
+            document.getElementById('userName').addEventListener('input', scheduleAutoSave);
             
             // Test connection on load
             setTimeout(() => {
