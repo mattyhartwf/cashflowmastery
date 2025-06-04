@@ -22,164 +22,10 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     
     <style>
-        /* Premium Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #002340 0%, #001a2e 25%, #002340 50%, #003454 75%, #002340 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 8s ease-in-out infinite;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: #C4AB3C;
-            overflow: hidden;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .loading-screen::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 30% 70%, rgba(196, 171, 60, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 30%, rgba(192, 192, 192, 0.08) 0%, transparent 50%);
-            animation: shimmer 6s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
-
-        .loader {
-            text-align: center;
-            z-index: 2;
-            position: relative;
-        }
-
-        .wealth-logo-loader {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 3rem;
-            opacity: 0;
-            animation: logoFadeIn 2s ease-out 0.5s forwards;
-        }
-
-        @keyframes logoFadeIn {
-            to { opacity: 1; transform: scale(1) translateY(0); }
-            from { opacity: 0; transform: scale(0.8) translateY(30px); }
-        }
-
-        .logo-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #C4AB3C 0%, #D4A853 50%, #C0C0C0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: iconPulse 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px rgba(196, 171, 60, 0.4));
-        }
-
-        @keyframes iconPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .wealth-logo-text {
-            color: #C4AB3C;
-            font-weight: 700;
-            font-size: 2.5rem;
-            letter-spacing: 4px;
-            font-family: 'Lato', sans-serif;
-            text-shadow: 0 0 20px rgba(196, 171, 60, 0.5);
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #C4AB3C 0%, #D4A853 50%, #C0C0C0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .wealth-subtitle {
-            color: #C0C0C0;
-            font-size: 1rem;
-            font-weight: 400;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            opacity: 0.8;
-            margin-bottom: 2rem;
-        }
-
-        .loading-bar {
-            width: 300px;
-            height: 4px;
-            background: rgba(192, 192, 192, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 2rem 0;
-            opacity: 0;
-            animation: barFadeIn 1s ease-out 1.5s forwards;
-        }
-
-        @keyframes barFadeIn {
-            to { opacity: 1; }
-        }
-
-        .loading-progress {
-            height: 100%;
-            background: linear-gradient(90deg, #C4AB3C 0%, #D4A853 50%, #C0C0C0 100%);
-            border-radius: 2px;
-            width: 0%;
-            animation: loadProgress 3s ease-out 2s forwards;
-            box-shadow: 0 0 15px rgba(196, 171, 60, 0.5);
-        }
-
-        @keyframes loadProgress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        .loading-text {
-            color: #C0C0C0;
-            font-size: 1.1rem;
-            font-weight: 300;
-            letter-spacing: 1px;
-            opacity: 0;
-            animation: textFadeIn 1s ease-out 2.5s forwards;
-        }
-
-        @keyframes textFadeIn {
-            to { opacity: 0.9; }
-        }
-
-        /* App Container */
-        .app-container {
-            opacity: 0;
-            transition: opacity 1s ease-in;
-        }
-
-        .app-container.loaded {
-            opacity: 1;
-        }
-
-        /* Email Section */
+        /* Simple Email Form Styles */
         .email-section {
-            background: linear-gradient(135deg, rgba(196, 171, 60, 0.1) 0%, rgba(212, 168, 83, 0.05) 100%);
-            border: 1px solid rgba(196, 171, 60, 0.2);
+            background: linear-gradient(135deg, rgba(194, 155, 60, 0.1) 0%, rgba(212, 168, 83, 0.05) 100%);
+            border: 1px solid rgba(194, 155, 60, 0.2);
             border-radius: 16px;
             padding: 2rem;
             margin-bottom: 2rem;
@@ -342,77 +188,44 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* Expandable sections */
-        .category-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .category-card:not(.expanded) .items-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .category-card.expanded .items-container {
-            max-height: none;
-        }
-
-        .category-card:not(.expanded) .add-item-btn {
-            display: none;
-        }
-
-        .category-header {
+        .wealth-logo-loader {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 1rem;
-            cursor: pointer;
+            justify-content: center;
+            margin-bottom: 2rem;
         }
 
-        .category-header::after {
-            content: '\f078';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            transition: transform 0.3s ease;
-        }
-
-        .category-card.expanded .category-header::after {
-            transform: rotate(180deg);
-        }
-
-        /* Add some space for the child/pet/gift categories */
-        .child-expenses-container,
-        .pets-expenses-container,
-        .gifts-expenses-container {
-            display: none;
-        }
-
-        .category-card.expanded .child-expenses-container,
-        .category-card.expanded .pets-expenses-container,
-        .category-card.expanded .gifts-expenses-container {
-            display: block;
+        .wealth-logo-loader .wealth-logo-text {
+            font-size: 24px;
+            letter-spacing: 3px;
+            text-shadow: 0 2px 8px rgba(194, 155, 60, 0.5);
         }
     </style>
 </head>
 <body>
-    <!-- Premium Loading Screen -->
+    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loader">
             <div class="wealth-logo-loader">
-                <div class="logo-icon">💰</div>
-                <div class="wealth-logo-text">WEALTH FACTORY</div>
-                <div class="wealth-subtitle">Premium Financial Planning</div>
+                <svg width="80" height="30" viewBox="0 0 1120 409" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="#ffffff">
+                        <path d="M 191.75 407.50 c -0.80 -0.50 -1.70 -1.10 -2 -1.35 -0.25 -0.25 -1.75 -1.20 -3.25 -2.15 -1.50 -0.95 -3.05 -2 -3.40 -2.35 -0.35 -0.35 -0.85 -0.65 -1.10 -0.65 -0.25 0 -0.75 -0.30 -1.10 -0.65 -0.35 -0.35 -2.10 -1.55 -3.90 -2.70 -2.80 -1.85 -3.80 -2.20 -6.75 -2.45 -7.85 -0.65 -11.60 -1.10 -12.80 -1.45 -0.85 -0.30 -7.70 2.45 -17.70 7 -4.20 1.95 -4.80 2 -10.50 0.75 -1.35 -0.30 -3.05 -0.65 -3.75 -0.75 -0.70 -0.15 -1.80 -0.35 -2.50 -0.50 -0.70 -0.20 -1.70 -0.35 -2.25 -0.45 -3.15 -0.45 -5.45 -1.40 -14.50 -5.95 -7.05 -3.50 -10.60 -5.60 -12.10 -7.05 -1.15 -1.10 -3.25 -3.05 -4.65 -4.30 -1.45 -1.25 -2.90 -2.50 -3.25 -2.85 -0.35 -0.35 -1.15 -0.50 -1.80 -0.35 -0.65 0.10 -2 0.35 -2.95 0.50 -0.95 0.10 -2.40 0.40 -3.25 0.60 -0.80 0.15 -1.70 0.35 -2 0.35 -0.25 0.05 -1.40 0.25 -2.50 0.45 -1.10 0.20 -2.65 0.45 -3.50 0.55 -0.80 0.10 -2 0.35 -2.65 0.45 -0.85 0.20 -5.15 -1.70 -14.45 -6.35 l -13.25 -6.60 -6.95 -13.85 c -4.85 -9.80 -6.80 -14.20 -6.65 -15 0.15 -0.65 0.40 -1.95 0.50 -2.90 0.15 -0.95 0.55 -3.20 0.95 -5 0.40 -1.80 0.80 -4.25 0.95 -5.50 0.15 -1.25 0.40 -2.85 0.55 -3.65 0.25 -1.15 -0.20 -1.90 -2.85 -4.75 -1.70 -1.85 -3.45 -3.70 -3.90 -4.10 -2.20 -2.15 -4.30 -5.65 -8.35 -13.80 -4.30 -8.55 -5.20 -11.10 -6.35 -18.20 -0.10 -0.70 -0.40 -2.15 -0.70 -3.25 -1.35 -5.30 -1.25 -6.30 0.95 -11.30 5.45 -12.40 6.60 -15.30 6.60 -16.70 0 -1.50 -0.50 -6.25 -0.90 -9 -0.15 -0.80 -0.35 -2.75 -0.50 -4.25 -0.40 -4.10 -0.40 -4.20 -2.30 -7.10 -1 -1.45 -3.30 -4.90 -5.10 -7.65 -1.80 -2.75 -3.50 -5.20 -3.70 -5.50 -2.10 -2.60 -2.15 -2.95 -2.15 -13.45 l 0 -10.25 3.15 -4.55 c 1.70 -2.45 4.60 -6.85 6.50 -9.75 3.10 -4.75 3.40 -5.45 3.60 -8.35 0.30 -4.25 0.65 -7.30 1 -9.40 0.80 -4.75 0.65 -5.50 -1.70 -10.90 -1.30 -2.95 -3.30 -7.50 -4.45 -10.15 -2.30 -5.15 -2.30 -5.05 -0.90 -11.95 2.35 -11.50 2.40 -11.60 7.35 -21.50 2.65 -5.35 5.30 -10.30 5.80 -10.95 0.50 -0.70 2.75 -3.10 5.05 -5.30 4.30 -4.30 4.55 -4.80 3.65 -8.25 -0.30 -0.95 -0.60 -3 -0.80 -4.50 -0.15 -1.50 -0.35 -3.10 -0.50 -3.50 -0.25 -0.75 -0.50 -2.20 -1.05 -6.30 -0.25 -1.95 0.30 -3.20 6.45 -15.50 l 6.75 -13.45 13 -6.45 c 13.35 -6.65 14.40 -7 18.60 -6.20 1.25 0.25 2.95 0.55 3.75 0.70 1.90 0.30 4.85 0.80 5.50 1 0.30 0.10 1.70 0.35 3.20 0.60 l 2.70 0.45 5.25 -5.20 5.25 -5.20 9.80 -4.90 c 6.85 -3.40 10.80 -5.10 13.05 -5.50 1.80 -0.35 3.70 -0.75 4.25 -0.85 0.55 -0.10 1.80 -0.35 2.75 -0.50 0.95 -0.15 2.15 -0.35 2.60 -0.50 0.50 -0.15 1.50 -0.35 2.25 -0.50 0.80 -0.10 1.95 -0.35 2.65 -0.45 0.85 -0.20 4.40 1.10 11.40 4.20 l 10.10 4.50 4.15 -0.50 c 6.50 -0.75 9.50 -1.05 10.80 -1 2.05 0.10 4.70 -0.90 7.30 -2.70 1.40 -0.95 4.40 -3.05 6.75 -4.60 2.35 -1.60 4.35 -3 4.50 -3.15 0.15 -0.15 1.15 -0.85 2.30 -1.65 l 2 -1.35 10.40 0 c 9.15 0 10.55 0.10 11.55 0.90 1.35 1 1.75 1.30 6.75 4.60 2.05 1.35 4 2.70 4.25 2.90 0.30 0.25 1.20 0.85 2 1.40 0.85 0.50 1.60 1.05 1.75 1.25 0.75 0.95 3.80 1.95 6.60 2.25 4.55 0.40 5.85 0.55 8.65 0.90 1.40 0.20 3.35 0.45 4.35 0.60 1.60 0.20 3.55 -0.45 11.75 -4.10 9.80 -4.30 11.85 -4.90 14.05 -4.10 0.60 0.20 1.85 0.50 2.75 0.60 0.85 0.15 2.75 0.50 4.10 0.80 2.55 0.55 2.95 0.60 6.50 1.25 1.10 0.20 6.45 2.60 11.85 5.30 7.40 3.70 10.45 5.50 12.35 7.30 7.65 7.35 9.15 8.25 12.30 7.15 0.55 -0.20 2.25 -0.50 3.75 -0.70 1.50 -0.15 3.20 -0.40 3.75 -0.50 0.55 -0.10 2.70 -0.45 4.85 -0.75 l 3.80 -0.60 39.95 20 c 21.95 11 40.25 20.30 40.70 20.65 0.45 0.35 1.20 1.50 1.70 2.55 0.45 1 1.40 2.35 2.05 3 0.65 0.60 1.20 1.35 1.20 1.70 0 0.30 0.20 0.70 0.45 0.90 0.30 0.15 8.60 -3.80 18.50 -8.75 l 18.05 -9 8.50 0 8.50 0 9.75 4.85 9.75 4.90 10.15 -5.05 c 13.30 -6.65 12.45 -6.65 26.25 0.25 l 9.85 4.95 9.75 -4.95 9.75 -4.90 8.40 0 8.35 -0.05 7 3.50 7 3.50 7 -3.50 7 -3.50 28.50 0 28.50 0 15.75 7.85 15.75 7.90 15.90 -7.95 c 10.45 -5.25 16.50 -8 17.75 -8.10 1.65 -0.15 4.40 1.10 18.90 8.30 l 16.95 8.50 16.50 -8.25 16.50 -8.25 7.50 0 7.50 0 12.15 6.05 12.10 6.05 12.15 -6.05 12.10 -6.05 36.85 0.05 36.90 0 6.25 3.15 6.25 3.20 6.35 -3.20 6.40 -3.20 7.60 0.05 7.65 0 10.75 5.40 10.75 5.45 10.75 -5.40 10.75 -5.35 8 0.10 8 0.10 7.65 3.80 7.60 3.85 12.35 24.65 12.35 24.60 0.05 43.50 c 0.10 36.65 0 43.85 -0.60 45.70 -0.65 2 -0.65 2.40 0.15 4.10 l 0.85 1.95 11.15 0 11.20 0 8.95 8.95 8.95 8.95 -1.20 3.95 c -0.70 2.15 -2.25 7.30 -3.50 11.40 -1.20 4.15 -2.40 8.05 -2.65 8.75 -0.25 0.70 -1.20 3.60 -2.05 6.50 -0.85 2.90 -2.10 6.95 -2.75 9 -0.65 2.05 -1.75 5.75 -2.50 8.20 l -1.40 4.45 -0.10 17.80 -0.10 17.80 -8 16.05 -8.05 16 -6.65 6.65 c -3.65 3.65 -7.15 7 -7.75 7.40 -1.05 0.65 -1.90 0.30 -12.65 -5.10 l -11.55 -5.75 -11.15 5.60 -11.10 5.55 -9 0.15 -9 0.15 -9.25 -4.55 -9.30 -4.50 -8.70 4.40 -8.75 4.35 -7.85 0.05 -7.90 0.05 -13.85 -7 -13.90 -7 -8.95 4.55 c -5 2.55 -11.45 5.35 -14.50 6.35 -5.15 1.70 -6.60 2.05 -11.30 2.65 -0.95 0.10 -3.05 0.40 -4.70 0.60 -4.50 0.70 -22.05 0.30 -26.05 -0.55 -0.80 -0.20 -2.50 -0.45 -3.70 -0.60 -1.15 -0.20 -2.70 -0.50 -3.35 -0.75 -0.65 -0.25 -1.20 -0.35 -1.20 -0.25 0 0.70 -8.95 -3.15 -20.65 -8.90 l -13.35 -6.55 -17.90 8.80 -17.85 8.80 -7.50 -0.10 -7.50 -0.10 -13.25 -6.65 -13.20 -6.65 -11.30 5.50 c -11.60 5.70 -11.90 5.85 -15.25 6.35 -2.10 0.30 -3.70 0.60 -5.75 1 -4.65 0.95 -24.25 1.35 -30.50 0.60 -11.30 -1.30 -18.50 -3.35 -27 -7.60 l -5.45 -2.75 -10.40 5.15 -10.40 5.15 -8.25 -0.05 -8.25 -0.10 -8.60 -4.30 -8.65 -4.35 -8.95 0 -9 0 -8.90 4.40 -8.90 4.40 -8.15 -0.05 -8.20 -0.05 -13.45 -6.70 -13.45 -6.75 -13.65 6.80 -13.60 6.75 -7.50 -0.10 -7.50 -0.10 -24 -11.95 -24 -11.95 -1.50 1.65 c -1.15 1.25 -11.70 6.75 -42.40 22.15 -22.50 11.30 -41.15 20.40 -41.40 20.20 -0.40 -0.25 -6.50 -1.30 -11.30 -1.95 -0.65 -0.10 -2.10 -0.35 -3.25 -0.55 -1.20 -0.20 -2.55 -0.40 -3.05 -0.45 -0.50 -0.05 -2.95 1.90 -5.85 4.70 -4.90 4.75 -5.05 4.85 -15.35 9.95 -5.70 2.80 -11.15 5.20 -12.05 5.35 -0.90 0.15 -3.25 0.60 -5.25 1.05 -1.95 0.45 -4.40 0.90 -5.35 1.05 -0.95 0.15 -2.15 0.45 -2.60 0.70 -1.95 1.05 -4.45 0.35 -13.90 -3.85 -5.35 -2.35 -10.30 -4.30 -11 -4.35 -0.70 0 -2.35 0.15 -3.75 0.35 -2.65 0.40 -3.85 0.55 -9.70 1 -3.50 0.30 -6 1.35 -8.85 3.70 -0.25 0.25 -1.05 0.75 -1.70 1.10 -0.65 0.35 -1.45 0.85 -1.70 1.10 -0.30 0.25 -2.90 2 -5.80 3.90 l -5.25 3.45 -10.50 0 c -9.35 0 -10.65 -0.10 -12 -0.95 z"/>
+                    </g>
+                    <g fill="#C29B3C">
+                        <path d="M192.40 407.90 c-0.75 -1.20 -7.20 -14.25 -9.85 -19.95 -1.70 -3.65 -1.85 -3.80 -5.65 -4.20 -1.45 -0.15 -3.55 -0.50 -4.65 -0.75 -1.10 -0.20 -3.35 -0.70 -5 -1 -2.90 -0.55 -3.90 -0.80 -8.85 -2.05 l-2.40 -0.55 -3.60 3.15 c-2 1.75 -3.75 3.30 -3.90 3.45 -0.15 0.15 -3 2.70 -6.40 5.70 -6.15 5.40 -6.15 5.40 -8.25 5.10 -1.10 -0.20 -2.30 -0.50 -2.60 -0.75 -0.25 -0.20 -2.40 -1.15 -4.75 -2.05 -2.35 -0.90 -4.45 -1.85 -4.75 -2.10 -0.25 -0.20 -0.75 -0.40 -1.10 -0.40 -0.35 0 -1.65 -0.45 -2.80 -1 l-2.15 -1 -0.60 -5.70 c-0.35 -3.10 -0.60 -7.30 -0.60 -9.35 0 -2.05 -0.25 -5.60 -0.50 -7.95 -0.50 -4.45 -0.80 -4.95 -4 -6.60 -1.70 -0.85 -12.65 -8.15 -15.30 -10.15 -1.85 -1.40 -2.40 -1.60 -3.55 -1.25 -1.90 0.55 -9.10 3 -16.90 5.70 -3.55 1.25 -6.95 2.30 -7.50 2.30 -0.65 0 -3.65 -2.65 -8.15 -7.15 -7.15 -7.15 -7.80 -8.15 -6.60 -10.25 0.25 -0.45 1.15 -3 2 -5.60 0.85 -2.60 1.75 -5.20 2 -5.75 0.25 -0.55 1.25 -3.45 2.25 -6.45 l1.80 -5.45 -1.15 -1.60 c-3.05 -4.25 -10.40 -15.25 -10.40 -15.50 0 -0.15 -0.55 -1.15 -1.25 -2.20 l-1.30 -1.90 -6.10 -0.55 c-3.35 -0.30 -8.70 -0.70 -11.85 -0.85 -9.05 -0.40 -9.20 -0.40 -10.50 -3.45 -0.60 -1.40 -1.55 -3.50 -2.05 -4.65 -0.50 -1.20 -0.95 -2.45 -0.95 -2.80 0 -0.35 -0.20 -0.85 -0.45 -1.15 -0.65 -0.70 -3.05 -7.10 -3.05 -8.10 0 -0.45 3.95 -5.35 8.80 -10.85 7.45 -8.45 8.75 -10.20 8.50 -11.25 -0.10 -0.70 -0.45 -2.15 -0.70 -3.25 -1.50 -6.10 -2.45 -11 -3.10 -15.50 -0.25 -1.90 -0.60 -3.80 -0.75 -4.25 -0.15 -0.40 -5.45 -3.30 -11.75 -6.40 -6.35 -3.15 -11.65 -5.90 -11.80 -6.20 -0.45 -0.70 -1.20 -1.05 12.20 5.60 6.35 3.15 11.70 6.10 11.85 6.50 0.15 0.45 0.50 2.35 0.75 4.25 0.65 4.55 1.70 9.85 3.10 15.50 0.25 1.10 0.60 2.80 0.75 3.75 0.25 1.85 1.05 0.90 -16.75 21.15 -0.70 0.75 -0.65 1.20 0.65 4.50"/>
+                    </g>
+                </svg>
+                <span class="wealth-logo-text">WEALTH FACTORY</span>
             </div>
             <div class="loading-bar">
                 <div class="loading-progress"></div>
             </div>
-            <p class="loading-text">Loading your financial dashboard...</p>
+            <p>Loading your financial dashboard...</p>
         </div>
     </div>
 
     <!-- Main Application -->
-    <div id="app" class="app-container">
+    <div id="app" class="app-container" style="display: none;">
         <!-- Navigation Header -->
         <nav class="premium-nav">
             <div class="nav-container">
@@ -544,7 +357,7 @@
                             <div class="categories-grid income-categories">
                                 <!-- Active Income -->
                                 <div class="category-card expanded">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-briefcase"></i> Active Income</h3>
                                         <div class="category-total" id="active-income-total">$0</div>
                                     </div>
@@ -577,8 +390,8 @@
                                 </div>
 
                                 <!-- Portfolio Income -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-chart-line"></i> Portfolio Income</h3>
                                         <div class="category-total" id="portfolio-income-total">$0</div>
                                     </div>
@@ -599,8 +412,8 @@
                                 </div>
 
                                 <!-- Passive Income -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-building"></i> Passive Income</h3>
                                         <div class="category-total" id="passive-income-total">$0</div>
                                     </div>
@@ -642,7 +455,7 @@
                             <div class="categories-grid expenses-categories">
                                 <!-- House Expenses -->
                                 <div class="category-card expanded">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-home"></i> House</h3>
                                         <div class="category-total" id="house-expenses-total">$0</div>
                                     </div>
@@ -715,8 +528,8 @@
                                 </div>
 
                                 <!-- Transportation -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-car"></i> Transportation</h3>
                                         <div class="category-total" id="transportation-expenses-total">$0</div>
                                     </div>
@@ -753,8 +566,8 @@
                                 </div>
 
                                 <!-- Food -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-utensils"></i> Food</h3>
                                         <div class="category-total" id="food-expenses-total">$0</div>
                                     </div>
@@ -775,8 +588,8 @@
                                 </div>
 
                                 <!-- Entertainment -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-film"></i> Entertainment</h3>
                                         <div class="category-total" id="entertainment-expenses-total">$0</div>
                                     </div>
@@ -813,80 +626,6 @@
                                     <button class="add-item-btn" onclick="addCustomItem('entertainment-expenses')">
                                         <i class="fas fa-plus"></i>
                                         Add Custom Entertainment Expense
-                                    </button>
-                                </div>
-
-                                <!-- Children -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
-                                        <h3><i class="fas fa-child"></i> Children</h3>
-                                        <div class="category-total" id="children-expenses-total">$0</div>
-                                    </div>
-                                    <div class="items-container expanded-items child-expenses-container" id="children-expenses-container">
-                                        <div class="financial-item">
-                                            <label>Childcare</label>
-                                            <input type="number" class="premium-input" data-field="childcare" step="0.01" placeholder="0.00">
-                                        </div>
-                                        <div class="financial-item">
-                                            <label>School Supplies</label>
-                                            <input type="number" class="premium-input" data-field="school_supplies" step="0.01" placeholder="0.00">
-                                        </div>
-                                        <div class="financial-item">
-                                            <label>Children's Activities</label>
-                                            <input type="number" class="premium-input" data-field="children_activities" step="0.01" placeholder="0.00">
-                                        </div>
-                                    </div>
-                                    <button class="add-item-btn" onclick="addCustomItem('children-expenses')">
-                                        <i class="fas fa-plus"></i>
-                                        Add Custom Children Expense
-                                    </button>
-                                </div>
-
-                                <!-- Pets -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
-                                        <h3><i class="fas fa-paw"></i> Pets</h3>
-                                        <div class="category-total" id="pets-expenses-total">$0</div>
-                                    </div>
-                                    <div class="items-container expanded-items pets-expenses-container" id="pets-expenses-container">
-                                        <div class="financial-item">
-                                            <label>Pet Care</label>
-                                            <input type="number" class="premium-input" data-field="pet_care" step="0.01" placeholder="0.00">
-                                        </div>
-                                        <div class="financial-item">
-                                            <label>Pet Food</label>
-                                            <input type="number" class="premium-input" data-field="pet_food" step="0.01" placeholder="0.00">
-                                        </div>
-                                    </div>
-                                    <button class="add-item-btn" onclick="addCustomItem('pets-expenses')">
-                                        <i class="fas fa-plus"></i>
-                                        Add Custom Pet Expense
-                                    </button>
-                                </div>
-
-                                <!-- Gifts -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
-                                        <h3><i class="fas fa-gift"></i> Gifts</h3>
-                                        <div class="category-total" id="gifts-expenses-total">$0</div>
-                                    </div>
-                                    <div class="items-container expanded-items gifts-expenses-container" id="gifts-expenses-container">
-                                        <div class="financial-item">
-                                            <label>Birthday Gifts</label>
-                                            <input type="number" class="premium-input" data-field="birthday_gifts" step="0.01" placeholder="0.00">
-                                        </div>
-                                        <div class="financial-item">
-                                            <label>Christmas Gifts</label>
-                                            <input type="number" class="premium-input" data-field="christmas_gifts" step="0.01" placeholder="0.00">
-                                        </div>
-                                        <div class="financial-item">
-                                            <label>Anniversary/Wedding</label>
-                                            <input type="number" class="premium-input" data-field="anniversary_wedding" step="0.01" placeholder="0.00">
-                                        </div>
-                                    </div>
-                                    <button class="add-item-btn" onclick="addCustomItem('gifts-expenses')">
-                                        <i class="fas fa-plus"></i>
-                                        Add Custom Gift Expense
                                     </button>
                                 </div>
                             </div>
@@ -976,7 +715,7 @@
                             <div class="categories-grid assets-categories">
                                 <!-- Liquid Assets -->
                                 <div class="category-card expanded">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-tint"></i> Liquid Assets</h3>
                                         <div class="category-total" id="liquid-total">$0</div>
                                     </div>
@@ -1017,8 +756,8 @@
                                 </div>
 
                                 <!-- Investments -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-chart-pie"></i> Investments</h3>
                                         <div class="category-total" id="investments-total">$0</div>
                                     </div>
@@ -1063,8 +802,8 @@
                                 </div>
 
                                 <!-- Personal Use Assets -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-home"></i> Personal Use Assets</h3>
                                         <div class="category-total" id="personal-assets-total">$0</div>
                                     </div>
@@ -1114,7 +853,7 @@
                             <div class="categories-grid liabilities-categories">
                                 <!-- Short-term Liabilities -->
                                 <div class="category-card expanded">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-clock"></i> Short-term Liabilities</h3>
                                         <div class="category-total" id="short-term-total">$0</div>
                                     </div>
@@ -1151,8 +890,8 @@
                                 </div>
 
                                 <!-- Long-term Liabilities -->
-                                <div class="category-card">
-                                    <div class="category-header" onclick="toggleCategory(this)">
+                                <div class="category-card expanded">
+                                    <div class="category-header">
                                         <h3><i class="fas fa-calendar-alt"></i> Long-term Liabilities</h3>
                                         <div class="category-total" id="long-term-total">$0</div>
                                     </div>
@@ -1251,281 +990,6 @@
                                     </div>
                                     <div class="summary-item">
                                         <span>Savings Rate</span>
-                                        <span>15%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="analytics-card large">
-                            <h3>Wealth Projection (10 Years)</h3>
-                            <div class="chart-wrapper">
-                                <canvas id="growthChart" width="700" height="300"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Scripts -->
-    <script src="utils.js"></script>
-    <script src="charts.js"></script>
-    <script src="airtable-integration.js"></script>
-    <script src="app.js"></script>
-
-    <!-- Clean JavaScript for Email Integration -->
-    <script>
-        // Global variables for current user
-        let currentUser = null;
-        
-        // Toggle category function
-        function toggleCategory(header) {
-            const categoryCard = header.closest('.category-card');
-            categoryCard.classList.toggle('expanded');
-        }
-        
-        // Show notification function
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => notification.classList.add('show'), 100);
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 4000);
-        }
-        
-        // Show status message function
-        function showStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.className = `status-message status-${type}`;
-            statusDiv.textContent = message;
-        }
-        
-        // Get current form data
-        function getCurrentData() {
-            const data = {};
-            let hasData = false;
-            
-            document.querySelectorAll('[data-field]').forEach(input => {
-                const value = parseFloat(input.value) || 0;
-                if (value !== 0) {
-                    data[input.dataset.field] = value;
-                    hasData = true;
-                }
-            });
-            
-            return { data, hasData };
-        }
-        
-        // Set form data
-        function setFormData(data) {
-            Object.entries(data).forEach(([field, value]) => {
-                const input = document.querySelector(`[data-field="${field}"]`);
-                if (input) {
-                    input.value = value || '';
-                }
-            });
-            
-            // Trigger calculations
-            if (window.app) {
-                window.app.data = { ...window.app.data, ...data };
-                window.app.calculateAll();
-                window.app.updateCharts();
-            }
-        }
-        
-        // Load data function
-        async function loadData() {
-            const email = document.getElementById('userEmail').value.trim();
-            const name = document.getElementById('userName').value.trim();
-            
-            if (!email) {
-                showStatus('Please enter your email address', 'error');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showStatus('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            currentUser = { email, name: name || email.split('@')[0] };
-            showStatus('Loading your data...', 'info');
-            
-            try {
-                const result = await window.airtableIntegration.loadUserData(email);
-                
-                if (result.success && result.data) {
-                    setFormData(result.data.data);
-                    showCurrentUser();
-                    showStatus(`Welcome back, ${result.data.name}! Data loaded successfully.`, 'success');
-                    showNotification('Your financial data has been loaded!', 'success');
-                } else {
-                    showCurrentUser();
-                    showStatus(`Ready for ${currentUser.name}. No previous data found - start entering your information.`, 'warning');
-                    showNotification('No existing data found. Ready to start fresh!', 'info');
-                }
-            } catch (error) {
-                console.error('Load error:', error);
-                showStatus('Failed to load data. Please try again.', 'error');
-            }
-        }
-        
-        // Save data function
-        async function saveData() {
-            const email = document.getElementById('userEmail').value.trim();
-            const name = document.getElementById('userName').value.trim();
-            
-            if (!email) {
-                showStatus('Please enter your email address', 'error');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showStatus('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            const { data, hasData } = getCurrentData();
-            
-            if (!hasData) {
-                showStatus('No data to save. Please enter some financial information first.', 'warning');
-                return;
-            }
-            
-            currentUser = { email, name: name || email.split('@')[0] };
-            showStatus('Saving your data...', 'info');
-            
-            try {
-                const userData = {
-                    email: currentUser.email,
-                    name: currentUser.name,
-                    data: data,
-                    source: 'web_app'
-                };
-                
-                const result = await window.airtableIntegration.saveUserData(userData);
-                
-                if (result.success) {
-                    showCurrentUser();
-                    showStatus(`Data saved successfully for ${currentUser.name}!`, 'success');
-                    showNotification('Your financial data has been saved to the cloud!', 'success');
-                } else {
-                    throw new Error(result.error || 'Save failed');
-                }
-            } catch (error) {
-                console.error('Save error:', error);
-                showStatus('Failed to save data. Please try again.', 'error');
-                showNotification('Save failed. Please check your connection and try again.', 'error');
-            }
-        }
-        
-        // Show current user
-        function showCurrentUser() {
-            if (currentUser) {
-                const statusDiv = document.getElementById('statusMessage');
-                statusDiv.className = 'current-user';
-                statusDiv.innerHTML = `
-                    <i class="fas fa-user-check"></i>
-                    Logged in as <strong>${currentUser.name}</strong> (${currentUser.email})
-                    <button onclick="logout()" style="margin-left: 10px; padding: 4px 8px; background: #EF4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Logout
-                    </button>
-                `;
-            }
-        }
-        
-        // Logout function
-        function logout() {
-            currentUser = null;
-            document.getElementById('userEmail').value = '';
-            document.getElementById('userName').value = '';
-            document.getElementById('statusMessage').innerHTML = '';
-            
-            // Clear form data
-            document.querySelectorAll('[data-field]').forEach(input => {
-                input.value = '';
-            });
-            
-            // Reset calculations
-            if (window.app) {
-                window.app.data = {};
-                window.app.calculateAll();
-                window.app.updateCharts();
-            }
-            
-            showNotification('Logged out successfully', 'info');
-        }
-        
-        // Email validation
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
-        
-        // Auto-save functionality
-        function setupAutoSave() {
-            let autoSaveTimeout;
-            
-            document.querySelectorAll('[data-field]').forEach(input => {
-                input.addEventListener('input', () => {
-                    if (currentUser) {
-                        clearTimeout(autoSaveTimeout);
-                        autoSaveTimeout = setTimeout(() => {
-                            saveData();
-                        }, 30000); // Auto-save after 30 seconds of inactivity
-                    }
-                });
-            });
-        }
-        
-        // Initialize auto-save when app loads
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(setupAutoSave, 2000);
-        });
-        
-        // Add custom item function (global for onclick handlers)
-        function addCustomItem(category) {
-            if (window.app) {
-                window.app.addCustomItem(category);
-            }
-        }
-        
-        // Update children, pets, and gifts calculations
-        if (window.app) {
-            const originalCalculateIncomeStatement = window.app.calculateIncomeStatement;
-            window.app.calculateIncomeStatement = function() {
-                // Call original function
-                originalCalculateIncomeStatement.call(this);
-                
-                // Calculate additional expense categories
-                const childrenExpenses = [
-                    'childcare', 'school_supplies', 'children_activities'
-                ].reduce((sum, field) => sum + (this.data[field] || 0), 0);
-                
-                const petsExpenses = [
-                    'pet_care', 'pet_food'
-                ].reduce((sum, field) => sum + (this.data[field] || 0), 0);
-                
-                const giftsExpenses = [
-                    'birthday_gifts', 'christmas_gifts', 'anniversary_wedding'
-                ].reduce((sum, field) => sum + (this.data[field] || 0), 0);
-                
-                // Update displays
-                this.updateValueWithAnimation('children-expenses-total', childrenExpenses);
-                this.updateValueWithAnimation('pets-expenses-total', petsExpenses);
-                this.updateValueWithAnimation('gifts-expenses-total', giftsExpenses);
-            };
-        }
-    </script>
-</body>
-</html></span>
                                         <span id="savings-rate">0%</span>
                                     </div>
                                 </div>
@@ -1581,4 +1045,450 @@
                                         <span>3.2 months</span>
                                     </div>
                                     <div class="score-item">
-                                        <span>Savings Rate
+                                        <span>Savings Rate</span>
+                                        <span>15%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analytics-card large">
+                            <h3>Wealth Projection (10 Years)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="growthChart" width="700" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="utils.js"></script>
+    <script src="storage.js"></script>
+    <script src="calculations.js"></script>
+    <script src="charts.js"></script>
+    <script src="airtable-integration.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Airtable Integration Script -->
+    <script>
+        // Airtable Configuration
+        const AIRTABLE_BASE_ID = 'appBJSpCa8ue7cqiA';
+        const AIRTABLE_API_KEY = 'patm8ZuPbmf2JVGX6.9b1907acddb8cea5400ae18009490f5cc6d6f087433ad394cf9bbad2a731e268';
+        const AIRTABLE_TABLE = 'Students';
+        const AIRTABLE_URL = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE}`;
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+        
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.textContent = message;
+        }
+        
+        // Get current form data
+        function getCurrentData() {
+            const data = {};
+            let hasData = false;
+            
+            document.querySelectorAll('[data-field]').forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                if (value !== 0) {
+                    data[input.dataset.field] = value;
+                    hasData = true;
+                }
+            });
+            
+            return { data, hasData };
+        }
+        
+        // Set form data
+        function setFormData(data) {
+            console.log('📥 Loading data into form fields...');
+            
+            Object.entries(data).forEach(([field, value]) => {
+                const input = document.querySelector(`[data-field="${field}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            });
+            
+            // Wait for main app to be ready, then trigger calculations
+            const triggerCalculations = () => {
+                if (window.app && typeof window.app.calculateAll === 'function') {
+                    console.log('📊 Triggering calculations after data load');
+                    window.app.calculateAll();
+                    window.app.updateCharts();
+                } else {
+                    // App not ready yet, try again
+                    setTimeout(triggerCalculations, 500);
+                }
+            };
+            
+            setTimeout(triggerCalculations, 300);
+        }
+        
+        // Auto-save function (debounced)
+        let autoSaveTimeout;
+        function scheduleAutoSave() {
+            const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            // Only auto-save if we have email and name
+            if (!email || !name) return;
+            
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                autoSaveData();
+            }, 3000); // Wait 3 seconds after user stops typing
+        }
+        
+        // Auto-save data quietly
+        async function autoSaveData() {
+            const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            if (!email || !name) return;
+            
+            const { data: currentData, hasData } = getCurrentData();
+            
+            try {
+                // Save even if form is empty (just email/name)
+                const searchUrl = `${AIRTABLE_URL}?filterByFormula={Email}='${email}'`;
+                
+                const searchResponse = await fetch(searchUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!searchResponse.ok) return;
+                
+                const searchData = await searchResponse.json();
+                
+                const record = {
+                    fields: {
+                        'Email': email,
+                        'Name': name,
+                        'Last Updated': new Date().toISOString(),
+                        'Financial Data': JSON.stringify(currentData),
+                        'Net Worth': calculateNetWorth(currentData),
+                        'Monthly Cash Flow': calculateMonthlyCashFlow(currentData),
+                        'Source': 'simple_app_autosave'
+                    }
+                };
+                
+                let response;
+                if (searchData.records.length > 0) {
+                    // Update existing record
+                    const recordId = searchData.records[0].id;
+                    response = await fetch(`${AIRTABLE_URL}/${recordId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(record)
+                    });
+                } else {
+                    // Create new record
+                    response = await fetch(AIRTABLE_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ records: [record] })
+                    });
+                }
+                
+                if (response.ok && hasData) {
+                    // Only show notification if there's actual financial data
+                    showNotification('💾 Auto-saved!', 'success');
+                }
+                
+            } catch (error) {
+                console.error('Auto-save error:', error);
+            }
+        }
+        
+        // Save data to Airtable
+        async function saveData() {
+            const email = document.getElementById('userEmail').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            if (!email) {
+                showNotification('Please enter your email address', 'error');
+                showStatus('❌ Please enter your email address', 'error');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showNotification('Please enter a valid email address', 'error');
+                showStatus('❌ Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (!name) {
+                showNotification('Please enter your full name', 'error');
+                showStatus('❌ Please enter your full name', 'error');
+                return;
+            }
+            
+            const { data: currentData, hasData } = getCurrentData();
+            
+            if (!hasData) {
+                showNotification('Please fill out some financial information first, then save your data', 'warning');
+                showStatus('💡 Fill out some financial fields below, then click Save Data', 'warning');
+                return;
+            }
+            
+            showStatus('Saving data to Airtable...', 'info');
+            
+            try {
+                // Search for existing record
+                const searchUrl = `${AIRTABLE_URL}?filterByFormula=FIND("${email}",{Email})`;
+                
+                const searchResponse = await fetch(searchUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!searchResponse.ok) {
+                    const errorText = await searchResponse.text();
+                    throw new Error(`Search failed: ${searchResponse.status} - ${errorText}`);
+                }
+                
+                const searchData = await searchResponse.json();
+                
+                // Create clean record data
+                const record = {
+                    fields: {
+                        'Email': email,
+                        'Name': name,
+                        'Last Updated': new Date().toISOString(),
+                        'Financial Data': JSON.stringify(currentData),
+                        'Net Worth': Math.round(calculateNetWorth(currentData) * 100) / 100,
+                        'Monthly Cash Flow': Math.round(calculateMonthlyCashFlow(currentData) * 100) / 100,
+                        'Source': 'simple_app'
+                    }
+                };
+                
+                let response;
+                if (searchData.records && searchData.records.length > 0) {
+                    // Update existing record
+                    const recordId = searchData.records[0].id;
+                    
+                    response = await fetch(`${AIRTABLE_URL}/${recordId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(record)
+                    });
+                } else {
+                    // Create new record
+                    response = await fetch(AIRTABLE_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ records: [record] })
+                    });
+                }
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    showStatus('✅ Data saved successfully!', 'success');
+                    showNotification('Data saved to Airtable successfully!', 'success');
+                } else {
+                    const errorData = await response.text();
+                    throw new Error(`Save failed: ${response.status} - ${errorData}`);
+                }
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                showStatus(`❌ Save failed: ${error.message}`, 'error');
+                showNotification('Failed to save data. Please try again.', 'error');
+            }
+        }
+        
+        // Load data from Airtable
+        async function loadData() {
+            const email = document.getElementById('userEmail').value.trim();
+            
+            if (!email) {
+                showNotification('Please enter your email address', 'error');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            showStatus('Loading data from Airtable...', 'info');
+            
+            try {
+                const searchUrl = `${AIRTABLE_URL}?filterByFormula={Email}='${email}'`;
+                
+                const response = await fetch(searchUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Load failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.records.length > 0) {
+                    const record = data.records[0];
+                    const financialData = JSON.parse(record.fields['Financial Data'] || '{}');
+                    
+                    // Load the name too
+                    document.getElementById('userName').value = record.fields['Name'] || '';
+                    
+                    setFormData(financialData);
+                    
+                    const lastUpdated = new Date(record.fields['Last Updated']).toLocaleDateString();
+                    showStatus(`✅ Data loaded successfully! Last updated: ${lastUpdated}`, 'success');
+                    showNotification('Data loaded from Airtable!', 'success');
+                } else {
+                    showStatus('No saved data found for this email address.', 'warning');
+                    showNotification('No saved data found for this email.', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Load error:', error);
+                showStatus(`❌ Load failed: ${error.message}`, 'error');
+                showNotification('Failed to load data. Please try again.', 'error');
+            }
+        }
+        
+        // Simple calculations
+        function calculateNetWorth(data) {
+            const assets = calculateTotal(data, [
+                'cash_on_hand', 'personal_checking', 'personal_savings', 'business_checking', 'business_savings',
+                'money_market', 'certificates_deposit', 'business_1', 'business_2', 'business_3',
+                'stocks', 'bonds', 'mutual_funds', 'ira', '401k', 'primary_residence', 'auto_1', 'auto_2', 'other_personal_assets'
+            ]);
+            
+            const liabilities = calculateTotal(data, [
+                'medical_dental', 'credit_card_1', 'credit_card_2', 'credit_card_3', 'credit_card_4', 'credit_card_5',
+                'primary_mortgage', 'heloc', 'investment_mortgage', 'auto_loan_1', 'auto_loan_2', 'student_loans', 'personal_loans_balance'
+            ]);
+            
+            return assets - liabilities;
+        }
+        
+        function calculateMonthlyCashFlow(data) {
+            const income = calculateTotal(data, [
+                'salary_wages', 'distributions', 'commissions', 'bonus', 'interest_income',
+                'dividends', 'royalties', 'business_income', 'real_estate_income'
+            ]);
+            
+            const expenses = calculateTotal(data, [
+                'mortgage_rent', 'heloc_payment', 'hoa_fees', 'cell_phone_1', 'cell_phone_2',
+                'internet', 'cable_satellite', 'home_security', 'home_insurance', 'electricity', 'gas',
+                'water_sewer', 'waste_removal', 'repairs_maintenance', 'lawncare_pest',
+                'auto_payment_1', 'auto_payment_2', 'auto_insurance', 'registration_tags', 'gas_fuel', 'auto_repairs',
+                'groceries', 'restaurants', 'streaming', 'music', 'movies', 'concerts', 'sporting_events',
+                'live_theater', 'outdoor_activities'
+            ]);
+            
+            return income - expenses;
+        }
+        
+        function calculateTotal(data, fields) {
+            return fields.reduce((sum, field) => sum + (data[field] || 0), 0);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Airtable integration initialized');
+            
+            // Remove loading screen
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                const appContainer = document.getElementById('app');
+                
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+                
+                if (appContainer) {
+                    appContainer.style.display = 'block';
+                }
+            }, 1000);
+            
+            // Add event listeners for save/load buttons
+            const saveToAirtableBtn = document.getElementById('saveToAirtable');
+            if (saveToAirtableBtn) {
+                saveToAirtableBtn.removeEventListener('click', saveData);
+                saveToAirtableBtn.addEventListener('click', saveData);
+            }
+            
+            // Add auto-save listeners to all financial inputs (with delay to avoid conflicts)
+            setTimeout(() => {
+                document.querySelectorAll('[data-field]').forEach(input => {
+                    input.addEventListener('input', scheduleAutoSave);
+                    input.addEventListener('change', scheduleAutoSave);
+                });
+                
+                // Add listeners to email and name fields
+                const userEmailInput = document.getElementById('userEmail');
+                const userNameInput = document.getElementById('userName');
+                
+                if (userEmailInput) {
+                    userEmailInput.addEventListener('input', scheduleAutoSave);
+                }
+                if (userNameInput) {
+                    userNameInput.addEventListener('input', scheduleAutoSave);
+                }
+            }, 2000);
+            
+            // Test Airtable connection
+            setTimeout(() => {
+                fetch(`${AIRTABLE_URL}?maxRecords=1`, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('✅ Airtable connection working');
+                    } else {
+                        console.error('❌ Airtable connection failed');
+                        showNotification('Warning: Could not connect to Airtable', 'warning');
+                    }
+                }).catch(error => {
+                    console.error('❌ Airtable connection error:', error);
+                });
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
