@@ -1117,22 +1117,146 @@
                 const input = document.querySelector(`[data-field="${field}"]`);
                 if (input) {
                     input.value = value;
+                    // Trigger change event for each input to ensure calculations update
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
             
-            // Wait for main app to be ready, then trigger calculations
+            // Multiple attempts to trigger calculations with different methods
             const triggerCalculations = () => {
+                console.log('📊 Triggering calculations after data load');
+                
+                // Method 1: Try main app calculations
                 if (window.app && typeof window.app.calculateAll === 'function') {
-                    console.log('📊 Triggering calculations after data load');
                     window.app.calculateAll();
-                    window.app.updateCharts();
-                } else {
-                    // App not ready yet, try again
-                    setTimeout(triggerCalculations, 500);
+                    if (typeof window.app.updateCharts === 'function') {
+                        window.app.updateCharts();
+                    }
                 }
+                
+                // Method 2: Manual calculation fallback
+                setTimeout(() => {
+                    updateAllTotalsManually(data);
+                }, 100);
+                
+                // Method 3: Trigger input events on all fields to force recalculation
+                setTimeout(() => {
+                    document.querySelectorAll('[data-field]').forEach(input => {
+                        if (input.value) {
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    });
+                }, 200);
             };
             
-            setTimeout(triggerCalculations, 300);
+            // Try calculations immediately and with delays
+            setTimeout(triggerCalculations, 100);
+            setTimeout(triggerCalculations, 500);
+            setTimeout(triggerCalculations, 1000);
+        }
+        
+        // Manual calculation update as fallback
+        function updateAllTotalsManually(data) {
+            console.log('🔢 Updating totals manually...');
+            
+            // Calculate and update income totals
+            const activeIncome = calculateTotal(data, ['salary_wages', 'distributions', 'commissions', 'bonus', 'interest_income']);
+            const portfolioIncome = calculateTotal(data, ['dividends', 'royalties']);
+            const passiveIncome = calculateTotal(data, ['business_income', 'real_estate_income']);
+            const totalIncome = activeIncome + portfolioIncome + passiveIncome;
+            
+            // Calculate and update expense totals
+            const houseExpenses = calculateTotal(data, ['mortgage_rent', 'heloc_payment', 'hoa_fees', 'cell_phone_1', 'cell_phone_2', 'internet', 'cable_satellite', 'home_security', 'home_insurance', 'electricity', 'gas', 'water_sewer', 'waste_removal', 'repairs_maintenance', 'lawncare_pest']);
+            const transportationExpenses = calculateTotal(data, ['auto_payment_1', 'auto_payment_2', 'auto_insurance', 'registration_tags', 'gas_fuel', 'auto_repairs']);
+            const foodExpenses = calculateTotal(data, ['groceries', 'restaurants']);
+            const entertainmentExpenses = calculateTotal(data, ['streaming', 'music', 'movies', 'concerts', 'sporting_events', 'live_theater', 'outdoor_activities']);
+            const totalExpenses = houseExpenses + transportationExpenses + foodExpenses + entertainmentExpenses;
+            
+            // Calculate and update asset totals
+            const liquidAssets = calculateTotal(data, ['cash_on_hand', 'personal_checking', 'personal_savings', 'business_checking', 'business_savings', 'money_market', 'certificates_deposit']);
+            const investments = calculateTotal(data, ['business_1', 'business_2', 'business_3', 'stocks', 'bonds', 'mutual_funds', 'ira', '401k']);
+            const personalAssets = calculateTotal(data, ['primary_residence', 'auto_1', 'auto_2', 'other_personal_assets']);
+            const totalAssets = liquidAssets + investments + personalAssets;
+            
+            // Calculate and update liability totals
+            const shortTermLiabilities = calculateTotal(data, ['medical_dental', 'credit_card_1', 'credit_card_2', 'credit_card_3', 'credit_card_4', 'credit_card_5']);
+            const longTermLiabilities = calculateTotal(data, ['primary_mortgage', 'heloc', 'investment_mortgage', 'auto_loan_1', 'auto_loan_2', 'student_loans', 'personal_loans_balance']);
+            const totalLiabilities = shortTermLiabilities + longTermLiabilities;
+            
+            // Calculate key metrics
+            const netWorth = totalAssets - totalLiabilities;
+            const monthlyCashFlow = totalIncome - totalExpenses;
+            const annualCashFlow = monthlyCashFlow * 12;
+            
+            // Update all display elements
+            updateElementText('active-income-total', formatCurrency(activeIncome));
+            updateElementText('portfolio-income-total', formatCurrency(portfolioIncome));
+            updateElementText('passive-income-total', formatCurrency(passiveIncome));
+            updateElementText('total-income', formatCurrency(totalIncome));
+            
+            updateElementText('house-expenses-total', formatCurrency(houseExpenses));
+            updateElementText('transportation-expenses-total', formatCurrency(transportationExpenses));
+            updateElementText('food-expenses-total', formatCurrency(foodExpenses));
+            updateElementText('entertainment-expenses-total', formatCurrency(entertainmentExpenses));
+            updateElementText('total-expenses', formatCurrency(totalExpenses));
+            
+            updateElementText('liquid-total', formatCurrency(liquidAssets));
+            updateElementText('investments-total', formatCurrency(investments));
+            updateElementText('personal-assets-total', formatCurrency(personalAssets));
+            updateElementText('total-assets', formatCurrency(totalAssets));
+            
+            updateElementText('short-term-total', formatCurrency(shortTermLiabilities));
+            updateElementText('long-term-total', formatCurrency(longTermLiabilities));
+            updateElementText('total-liabilities', formatCurrency(totalLiabilities));
+            
+            updateElementText('net-worth', formatCurrency(netWorth));
+            updateElementText('monthly-cash-flow', formatCurrency(monthlyCashFlow));
+            
+            // Update hero section
+            updateElementText('hero-net-worth', formatCurrency(netWorth));
+            updateElementText('hero-monthly-flow', formatCurrency(monthlyCashFlow));
+            updateElementText('hero-annual-projection', formatCurrency(annualCashFlow));
+            
+            // Update summary sections
+            updateElementText('summary-income', formatCurrency(totalIncome));
+            updateElementText('summary-expenses', formatCurrency(totalExpenses));
+            updateElementText('summary-cash-flow', formatCurrency(monthlyCashFlow));
+            updateElementText('annual-income', formatCurrency(totalIncome * 12));
+            updateElementText('annual-expenses', formatCurrency(totalExpenses * 12));
+            updateElementText('annual-cash-flow', formatCurrency(annualCashFlow));
+            
+            updateElementText('summary-assets', formatCurrency(totalAssets));
+            updateElementText('summary-liabilities', formatCurrency(totalLiabilities));
+            updateElementText('summary-net-worth', formatCurrency(netWorth));
+            
+            // Update ratios
+            const debtToAssetRatio = totalAssets > 0 ? (totalLiabilities / totalAssets * 100).toFixed(1) : 0;
+            const liquidityRatio = totalExpenses > 0 ? (liquidAssets / totalExpenses).toFixed(1) : 0;
+            const savingsRate = totalIncome > 0 ? (monthlyCashFlow / totalIncome * 100).toFixed(1) : 0;
+            
+            updateElementText('debt-to-asset-ratio', debtToAssetRatio + '%');
+            updateElementText('liquidity-ratio', liquidityRatio + 'x');
+            updateElementText('savings-rate', savingsRate + '%');
+            
+            console.log('✅ Manual totals update complete');
+        }
+        
+        // Helper functions
+        function updateElementText(id, text) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = text;
+            }
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount || 0);
         }
         
         // Auto-save function (debounced)
